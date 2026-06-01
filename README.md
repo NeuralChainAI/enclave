@@ -1,77 +1,95 @@
-# Enclave — Private Legal AI, Inside Your Boundary
+# Enclave — Self-Hosted Private Legal AI for Law Firms & In-House Teams
 
-> **Self-hosted, whitelabeled legal AI for law firms and in-house teams.** Enclave runs entirely inside your own VPC, so your contract corpus, drafts, and client data never leave your security boundary. AI co-counsel, contract review, due diligence, and drafting — grounded in *your* documents, not a public model's memory.
+> **Enclave is a self-hosted, private legal AI platform that runs entirely inside your own cloud (VPC) or on-premise — so your contract corpus, drafts, matter files, and client data never leave your security boundary.** AI co-counsel, contract review, due diligence, and drafting, grounded in *your* firm's documents and standards — not a public model's memory, and never used to train anyone else's model.
 
-This repository contains the **low-fidelity UI wireframes** for Enclave. They exist to validate information architecture and visual language before any production design or build begins. They are structure and hierarchy only — not final pixels, microcopy, or production assets.
-
----
-
-## What we're building
-
-Enclave is a legal-AI platform delivered as a service and deployed **in the customer's own cloud (in-VPC / self-hosted)**. It is built on two engines:
-
-- **Onyx** — retrieval-augmented generation (RAG) over the firm's entire contract corpus, with pin-cited, source-grounded answers.
-- **Paperclip** — agent orchestration for multi-step legal workflows (an "AI workforce").
-
-Every answer, redline, and draft is grounded in the firm's own executed agreements and standards — never a generic foundation model guessing in the dark. Because the whole stack runs inside the customer boundary, privileged and confidential data stays put.
-
-### Core modules (wireframed here)
-
-| Module | What it does |
-| --- | --- |
-| **Dashboard** | AI-forward in-app home — "ask your AI" box, capability tiles, KPI strip, needs-attention band, per-module summaries, activity feed. |
-| **Assistant** | Multi-turn conversational AI co-counsel. Corpus-grounded, pin-cited, with hand-offs to Diligence, Agents, and Draft. |
-| **Agents** | Your AI workforce — active runs plus a library of agent templates and a Create Custom Agent flow. Paperclip-powered. |
-| **Research** | Q&A across the firm's whole contract corpus. Pin-cited answers with a source viewer. Onyx-powered. |
-| **Diligence** | Multi-document extraction grid — rows are documents, columns are extraction prompts, cells fill in real time. |
-| **Review** | Single-document clause check against your playbook. Clause cards scored by severity, with grounded redlines. |
-| **Playbooks** | Author and edit firm standards — rules with preferred / acceptable / fallback positions, severity, and escalation, generated from your corpus and consumed by Review, Assistant, and Agents. |
-| **Draft** | AI drafting in your firm's voice, generated from your executed precedents. Editor canvas, precedent rail, clause library. |
-| **Settings / Connectors** | Connect data sources, watch live ingestion, and monitor per-source indexing status. |
+Enclave gives law firms, in-house legal teams, and M&A diligence groups a **whitelabeled, fully private AI workforce**: ask questions across your entire contract corpus, run extractions over thousands of documents, review and redline against your own playbook, draft in your firm's voice, and schedule autonomous agents — all behind your own firewall, under your own access controls.
 
 ---
 
-## Design language
+## Why self-hosted, private AI
 
-Locked design tokens live in [`_shared.css`](./_shared.css):
+Legal work is privileged, confidential, and often contractually restricted from leaving a controlled environment. Public chatbots and multi-tenant SaaS break that model. Enclave is built the other way around:
 
-- **Ground** — charcoal (`#0a0a0a`) with elevated panels (`#141414` / `#1a1a1a`).
-- **Accent** — a single forest green (`#1a7a52`). No gradients.
-- **Severity** — high `#c53030`, medium `#c57a20`, low `#22744d`.
-- **Type** — serif headlines (Georgia), system sans body. All-caps reserved for section labels.
+- **Self-hosted in your VPC or on-prem** — deploy into AWS, Azure, GCP, or your own datacenter. Zero bytes of your data ever leave your boundary.
+- **No training on your data** — your contracts and work product are never used to train shared or third-party models. Your corpus stays yours.
+- **Attorney–client privilege preserved** — privileged and confidential material is processed inside the boundary you already trust, supporting confidentiality, professional-responsibility, and data-residency obligations.
+- **Bring your own model** — route to a local open-weight LLM (Ollama), your own Amazon Bedrock / Azure OpenAI tenancy, or Claude, through a single LLM gateway (LiteLLM). No lock-in.
+- **Your access controls** — document-level ACLs, SSO/SAML, and role-based access mean the AI only ever sees what a given user is allowed to see.
+- **Auditable & governed** — every retrieval, answer, and agent run is logged for review, supervision, and compliance.
 
-Brand mark direction: **Colonnade** — two columns and a lintel that wall off a protected core, fusing classical legal vocabulary with the "private boundary" idea. See [`logos.html`](./logos.html) for the full exploration.
+**Compliance posture:** SOC 2 Type II (in progress) · GDPR-ready · MIT open-core foundations · fully self-hosted.
 
 ---
 
-## Running the wireframes
+## How it's built
 
-These are static HTML files with no build step or dependencies. Open [`index.html`](./index.html) directly in a browser, or serve the folder:
+Enclave integrates two open-source substrates and wraps them in a branded, legal-specific product layer:
+
+- **Onyx** — the knowledge substrate. Retrieval-augmented generation (RAG) over your entire contract corpus, with 50+ enterprise connectors, document-level ACLs, and pin-cited, source-grounded answers.
+- **Paperclip** — the agent substrate. Orchestration, scheduling, governance, and audit for multi-step legal workflows — an always-on AI workforce.
+- **LiteLLM gateway** — model routing across local Ollama, BYO Bedrock/Azure, and Claude.
+
+Everything runs side-by-side **inside your VPC**, connected to the systems you already use: iManage, NetDocuments, SharePoint, network drives, S3, your CLM, and email.
+
+---
+
+## Features
+
+### Available in the product
+
+- **AI Assistant (co-counsel)** — multi-turn conversational AI grounded in your corpus, with pin-cited sources and hand-offs to Diligence, Agents, and Draft.
+- **Research — corpus-wide Q&A** — ask natural-language questions of your firm's whole contract corpus and get pin-cited answers with a source viewer and highlighted spans.
+- **Diligence — multi-document extraction grid** — rows are documents, columns are extraction prompts; run structured extractions across thousands of contracts in a spreadsheet-style grid and export to CSV.
+- **Review — clause review vs. playbook** — single-document review with severity-ranked clause findings and redlines grounded in your firm's playbook.
+- **Playbooks — codified firm standards** — author rules with preferred / acceptable / fallback positions, severity, escalation, and trigger language, auto-generated from your executed precedents and consumed by Review, Assistant, and Agents.
+- **Draft — AI drafting in your voice** — generate contracts and clauses from your executed precedents, with an editor canvas, precedent rail, and clause library.
+- **Agents / Workflows — autonomous AI workforce** — scheduled agents that run 24/7 inside your VPC: auto-renewal watch, portfolio drift monitoring, obligation tracking, and custom agents described in plain English.
+- **Connectors & ingestion** — connect your DMS, CLM, drives, and email; watch live in-VPC indexing and per-source sync status.
+- **Dashboard** — an AI-forward home with an "ask your AI" box, capability tiles, KPI strip, a needs-attention band, and per-module activity.
+
+### On the roadmap
+
+We are actively building toward:
+
+- **Negotiation copilot** — inline redline suggestions and counterparty-position comparison against your playbook, with one-click fallback language.
+- **Obligation & deadline extraction** — automatic extraction of renewals, notice windows, and covenants, synced to calendars and alerts.
+- **Clause library & clause comparison** — a managed, versioned library with side-by-side clause diffing across your corpus.
+- **Privilege & PII detection / redaction** — automated flagging and redaction of privileged and personal data before sharing or export.
+- **Conflict checks** — corpus-aware conflict-of-interest screening.
+- **Approval & escalation routing** — configurable approval workflows tied to playbook severity and approver roles.
+- **Governance & risk analytics** — dashboards on contract risk posture, deviation rates, and turnaround time.
+- **Enterprise identity** — SSO/SAML, SCIM provisioning, and granular RBAC.
+- **Firm-tuned models** — optional private fine-tuning / adapters trained only on your corpus, inside your boundary.
+- **Integrations & API** — deeper CLM/DMS sync, e-signature, plus a public API and webhooks for embedding Enclave in your own systems.
+- **Multi-language contracts** — review, extraction, and drafting across major contract languages.
+
+---
+
+## Who it's for
+
+In-house legal · M&A and transactional diligence · BigLaw · procurement and vendor management · mid-market firms — any team that needs frontier AI on confidential legal work **without** sending that work to a third party.
+
+---
+
+## Preview the interface
+
+The UI prototypes live in [`wireframe/`](./wireframe/). They are static HTML with no build step — open [`wireframe/index.html`](./wireframe/index.html) directly in a browser, or serve the folder:
 
 ```bash
+cd wireframe
 python3 -m http.server 8000
 # then visit http://localhost:8000
 ```
-
-`index.html` is the wireframe index and links to every page.
-
----
-
-## Status
-
-| | |
-| --- | --- |
-| Stage | Low-fidelity wireframes (IA + visual language validation) |
-| Not yet included | Production microcopy, real customer logos, product screenshots, animation specs, light theme, mobile breakpoints |
-| Next | Lock the brand mark, then move to production design |
 
 ---
 
 ## Keywords
 
-Legal AI · private legal AI · self-hosted legal AI · in-VPC legal AI · on-premise contract AI ·
-whitelabel legal AI platform · AI co-counsel · contract review software · AI contract review ·
-AI due diligence · legal document automation · contract drafting AI · clause extraction ·
-contract playbook software · redlining automation · legal research AI · retrieval-augmented generation ·
-RAG for legal · contract corpus search · law firm AI · in-house legal AI · LegalTech ·
-data residency · confidential AI · secure legal AI · VPC deployment.
+self-hosted legal AI · private legal AI · on-premise legal AI · in-VPC legal AI · confidential AI for lawyers ·
+secure legal AI platform · whitelabel legal AI · AI co-counsel · contract review software · AI contract review ·
+AI due diligence · M&A due diligence automation · legal document automation · contract drafting AI ·
+clause extraction · clause comparison · contract playbook software · redlining automation · negotiation copilot ·
+legal research AI · retrieval-augmented generation · RAG for legal · contract corpus search · contract analytics ·
+obligation management · legal workflow automation · AI agents for legal · law firm AI · in-house legal AI ·
+LegalTech · LegalAI · data residency · attorney-client privilege · GDPR · SOC 2 · self-hosted AI · VPC deployment ·
+bring your own model · open-source legal AI · Onyx · Paperclip.
