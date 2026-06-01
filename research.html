@@ -1,0 +1,249 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Research — NeuralChain</title>
+<link rel="stylesheet" href="_shared.css">
+<style>
+  .vault-layout { display: grid; grid-template-columns: 1fr 420px; gap: 24px; }
+  .chat-panel { display: flex; flex-direction: column; gap: 16px; }
+  .qa-input {
+    padding: 16px;
+    background: var(--bg-elev);
+    border: 1px solid var(--border-emph);
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .qa-input input {
+    flex: 1;
+    background: transparent;
+    border: 0;
+    color: var(--text);
+    font-family: inherit;
+    font-size: 14px;
+  }
+  .qa-input input:focus { outline: none; }
+  .qa-input .send { background: var(--accent); color: var(--text); padding: 8px 16px; border-radius: 4px; font-size: 13px; }
+
+  .scope-row { display: flex; gap: 8px; font-size: 12px; color: var(--text-muted); padding: 0 4px; }
+  .scope-row .label { color: var(--text-faint); }
+
+  .message-block { padding: 24px; background: var(--bg-elev); border: 1px solid var(--border); border-radius: 6px; }
+  .message-q { font-family: var(--serif); font-size: 22px; line-height: 1.3; margin-bottom: 4px; }
+  .message-q-meta { font-size: 12px; color: var(--text-faint); margin-bottom: 20px; }
+
+  .answer { line-height: 1.65; font-size: 14px; color: var(--text); }
+  .answer p { margin-bottom: 12px; }
+  .cite { display: inline-flex; align-items: center; justify-content: center; min-width: 18px; height: 18px; padding: 0 5px; margin: 0 1px; font-size: 10px; background: var(--accent-soft); color: var(--text); border-radius: 3px; font-family: ui-monospace, monospace; vertical-align: 2px; cursor: pointer; }
+  .cite:hover { background: var(--accent); }
+
+  .answer-stats { display: flex; gap: 16px; margin-top: 24px; padding-top: 16px; border-top: 1px solid var(--border); font-size: 12px; color: var(--text-muted); }
+  .answer-stats strong { color: var(--text); }
+  .answer-actions { margin-top: 16px; display: flex; gap: 8px; }
+
+  /* sources panel */
+  .sources-panel {
+    background: var(--bg-elev);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    overflow: hidden;
+    height: fit-content;
+    position: sticky;
+    top: 24px;
+  }
+  .sources-head { padding: 16px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+  .sources-head h3 { font-family: var(--serif); font-size: 16px; }
+  .sources-head .count { font-size: 12px; color: var(--text-muted); }
+  .source-item { padding: 14px 16px; border-bottom: 1px solid var(--border); cursor: pointer; }
+  .source-item:hover { background: var(--bg-panel); }
+  .source-item.active { background: var(--bg-panel); border-left: 2px solid var(--accent); padding-left: 14px; }
+  .source-head { display: flex; gap: 8px; align-items: baseline; margin-bottom: 4px; }
+  .source-cite-num { font-family: ui-monospace, monospace; font-size: 11px; color: var(--accent); background: var(--accent-soft); padding: 1px 5px; border-radius: 3px; }
+  .source-doc { font-size: 13px; color: var(--text); font-weight: 500; }
+  .source-meta { font-size: 11px; color: var(--text-faint); margin-bottom: 8px; }
+  .source-excerpt { font-size: 12px; color: var(--text-muted); line-height: 1.5; font-family: var(--serif); font-style: italic; padding-left: 8px; border-left: 2px solid var(--border-emph); }
+
+  .suggestions { padding: 16px; background: var(--bg-elev); border: 1px solid var(--border); border-radius: 6px; }
+  .suggestions-title { font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-faint); margin-bottom: 10px; }
+  .suggestions ul { list-style: none; }
+  .suggestions li { padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 13px; color: var(--text-muted); cursor: pointer; }
+  .suggestions li:hover { color: var(--text); }
+  .suggestions li:last-child { border-bottom: 0; }
+
+  .stat-pill { display: inline-flex; gap: 6px; font-size: 11px; color: var(--text-muted); padding: 4px 10px; background: var(--bg-elev); border: 1px solid var(--border); border-radius: 999px; }
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <aside class="sidebar">
+    <div class="sidebar-brand">NeuralChain<span style="color:var(--accent)">.</span></div>
+    <div class="sidebar-section">Workspace</div>
+    <a class="nav-item" href="dashboard.html"><span class="ico">⌂</span> Home</a>
+    <a class="nav-item" href="assistant.html"><span class="ico">✦</span> Assistant</a>
+    <a class="nav-item" href="workflows.html"><span class="ico">⟳</span> Agents</a>
+    <div class="sidebar-section">Modules</div>    <a class="nav-item active" href="research.html"><span class="ico">◊</span> Research</a>
+    <a class="nav-item" href="diligence.html"><span class="ico">⊞</span> Diligence</a>    <a class="nav-item" href="review.html"><span class="ico">▤</span> Review</a>
+    <a class="nav-item" href="playbooks.html"><span class="ico">❏</span> Playbooks</a>
+    <a class="nav-item" href="draft.html"><span class="ico">✎</span> Draft</a>
+    <div class="sidebar-section">Admin</div>
+    <a class="nav-item" href="#"><span class="ico">⚿</span> Security</a>
+    <a class="nav-item" href="settings.html"><span class="ico">⚙</span> Settings</a>
+    <div class="sidebar-footer">
+      <div style="color:var(--text-muted);">Acme Legal · prod</div>
+      <div>Deployed in your VPC</div>
+    </div>
+  </aside>
+
+  <main class="main">
+
+    <div class="page-head">
+      <div>
+        <div style="font-size: 11px; letter-spacing: 0.12em; color: var(--accent); text-transform: uppercase; margin-bottom: 8px;">Powered by Onyx · hybrid BM25 + vector · ACL-aware</div>
+        <h1 class="page-title">Research</h1>
+        <p class="page-sub">Ask anything across your entire contract corpus. Every answer pin-cited to source documents. Your corpus stays in your VPC.</p>
+      </div>
+      <div class="page-actions">
+        <span class="stat-pill"><strong style="color:var(--text)">12,847</strong> documents indexed</span>
+        <span class="stat-pill"><strong style="color:var(--text)">3.2M</strong> chunks</span>
+      </div>
+    </div>
+
+    <!-- Input -->
+    <div class="qa-input" style="margin-bottom:8px">
+      <span style="color: var(--text-faint); font-size: 16px;">⌕</span>
+      <input value="What's the median indemnity cap across our SaaS MSAs signed in the last 24 months?" />
+      <button class="send">Ask</button>
+    </div>
+    <div class="scope-row" style="margin-bottom: 24px;">
+      <span class="label">Scope:</span>
+      <span>All matters</span>
+      <span>·</span>
+      <span>Type: MSA</span>
+      <span>·</span>
+      <span>Date: 24 months</span>
+      <span>·</span>
+      <span style="color:var(--accent)">+ add filter</span>
+    </div>
+
+    <div class="vault-layout">
+
+      <!-- LEFT: answer -->
+      <div class="chat-panel">
+        <div class="message-block">
+          <div class="message-q">What's the median indemnity cap across our SaaS MSAs signed in the last 24 months?</div>
+          <div class="message-q-meta">Asked 14s ago · 47 sources retrieved · 6 cited in answer</div>
+
+          <div class="answer">
+            <p>Across 142 SaaS MSAs executed by Acme Legal between June 2024 and May 2026, the <strong>median indemnity cap is 12 months of fees paid</strong> <span class="cite">1</span><span class="cite">2</span>, with the interquartile range spanning 6–18 months.</p>
+
+            <p>The distribution shifted meaningfully in Q3 2025: prior to that quarter, the median cap was 6 months <span class="cite">3</span>; afterward it stabilized at 12 months. This corresponds to your firm's policy update circulated September 2025 <span class="cite">4</span> raising the preferred floor.</p>
+
+            <p>Outliers worth noting:</p>
+            <p style="padding-left: 16px;">
+              · 8 MSAs carry uncapped indemnity for IP infringement claims <span class="cite">5</span>, all with strategic vendors.<br>
+              · 3 MSAs cap at "fees paid in prior 3 months", well below median <span class="cite">6</span> — flagged for review.
+            </p>
+
+            <p>Comparison to market: external benchmarks place the SaaS-vendor-side median at 12 months as well, putting Acme's portfolio in line with industry norm.</p>
+          </div>
+
+          <div class="answer-stats">
+            <span>Confidence: <strong>High</strong></span>
+            <span>Retrieval: <strong>Hybrid BM25+vec</strong></span>
+            <span>Model: <strong>Claude Sonnet 4.6 (in-VPC)</strong></span>
+            <span>Took: <strong>4.2s</strong></span>
+          </div>
+
+          <div class="answer-actions">
+            <button class="btn">Export answer</button>
+            <button class="btn">Save to Research</button>
+            <button class="btn">Pin to dashboard</button>
+            <button class="btn">View retrieval trace</button>
+          </div>
+        </div>
+
+        <div class="suggestions">
+          <div class="suggestions-title">Suggested follow-ups</div>
+          <ul>
+            <li>→ Which counterparties are above your preferred cap?</li>
+            <li>→ Show the 3 outlier MSAs flagged for review</li>
+            <li>→ Compare indemnity caps to non-SaaS MSAs in same period</li>
+            <li>→ Create a Workflow that flags new MSAs falling below 12-month cap</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- RIGHT: sources -->
+      <div class="sources-panel">
+        <div class="sources-head">
+          <h3>Sources</h3>
+          <span class="count">6 cited · 47 retrieved</span>
+        </div>
+
+        <div class="source-item active">
+          <div class="source-head">
+            <span class="source-cite-num">1</span>
+            <span class="source-doc">Stripe MSA — executed 2025-08-14</span>
+          </div>
+          <div class="source-meta">§7.2 Limitation of Liability · p. 11 · iManage</div>
+          <div class="source-excerpt">"...total aggregate liability under this Agreement shall not exceed the fees paid by Customer in the twelve (12) months preceding the claim..."</div>
+        </div>
+
+        <div class="source-item">
+          <div class="source-head">
+            <span class="source-cite-num">2</span>
+            <span class="source-doc">Datadog MSA — executed 2026-01-22</span>
+          </div>
+          <div class="source-meta">§9.1 Cap · p. 8 · iManage</div>
+          <div class="source-excerpt">"...neither party's liability shall exceed an amount equal to twelve (12) months of fees..."</div>
+        </div>
+
+        <div class="source-item">
+          <div class="source-head">
+            <span class="source-cite-num">3</span>
+            <span class="source-doc">Snowflake MSA — executed 2024-11-03</span>
+          </div>
+          <div class="source-meta">§6.4 LoL · p. 14 · iManage</div>
+          <div class="source-excerpt">"...maximum liability shall be limited to the fees paid in the six (6) months prior..."</div>
+        </div>
+
+        <div class="source-item">
+          <div class="source-head">
+            <span class="source-cite-num">4</span>
+            <span class="source-doc">Internal Memo: Indemnity Policy Update</span>
+          </div>
+          <div class="source-meta">2025-09-12 · SharePoint · Legal Ops folder</div>
+          <div class="source-excerpt">"Effective immediately, all new SaaS vendor MSAs should target a 12-month indemnity cap as the preferred floor..."</div>
+        </div>
+
+        <div class="source-item">
+          <div class="source-head">
+            <span class="source-cite-num">5</span>
+            <span class="source-doc">IBM Master Services — executed 2025-04-30</span>
+          </div>
+          <div class="source-meta">§8.5 IP Indemnification · p. 22 · iManage</div>
+          <div class="source-excerpt">"...IBM shall defend Customer against any third-party claim alleging infringement... with no cap on damages..."</div>
+        </div>
+
+        <div class="source-item">
+          <div class="source-head">
+            <span class="source-cite-num">6</span>
+            <span class="source-doc">[Counterparty redacted] MSA</span>
+          </div>
+          <div class="source-meta">§11.3 Cap · p. 16 · iManage</div>
+          <div class="source-excerpt">"...aggregate liability limited to the fees paid in the three (3) months prior to the event giving rise..."</div>
+        </div>
+
+      </div>
+    </div>
+
+  </main>
+
+</div>
+
+</body>
+</html>

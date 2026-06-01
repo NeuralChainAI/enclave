@@ -1,0 +1,291 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Diligence — NeuralChain</title>
+<link rel="stylesheet" href="_shared.css">
+<style>
+  .toolbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; padding: 12px 16px; background: var(--bg-elev); border: 1px solid var(--border); border-radius: 6px; }
+  .toolbar-left { display: flex; gap: 12px; align-items: center; }
+  .toolbar-title { font-family: var(--serif); font-size: 17px; }
+  .toolbar-meta { font-size: 12px; color: var(--text-muted); }
+  .toolbar-right { display: flex; gap: 6px; }
+  .icon-btn { width: 30px; height: 30px; display: inline-flex; align-items: center; justify-content: center; border: 1px solid var(--border-emph); border-radius: 4px; color: var(--text-muted); font-size: 14px; background: var(--bg); }
+  .icon-btn:hover { color: var(--text); border-color: var(--text-muted); }
+
+  .progress { margin-bottom: 16px; padding: 10px 16px; background: var(--bg-elev); border: 1px solid var(--border); border-radius: 6px; display: flex; justify-content: space-between; align-items: center; font-size: 12px; color: var(--text-muted); }
+  .progress-bar { width: 200px; height: 4px; background: var(--bg-panel); border-radius: 2px; overflow: hidden; }
+  .progress-bar > div { width: 73%; height: 100%; background: var(--accent); }
+
+  .matrix-wrap { background: var(--bg-elev); border: 1px solid var(--border); border-radius: 6px; overflow: hidden; }
+  table.matrix { width: 100%; border-collapse: collapse; font-size: 13px; table-layout: fixed; }
+  table.matrix thead th {
+    background: var(--bg-panel);
+    color: var(--text);
+    text-align: left;
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--border-emph);
+    border-right: 1px solid var(--border);
+    font-weight: 500;
+    font-family: var(--serif);
+    font-size: 14px;
+    position: sticky;
+    top: 0;
+  }
+  table.matrix thead th:last-child { border-right: 0; }
+  table.matrix thead th .col-prompt {
+    display: block;
+    font-family: var(--sans);
+    font-size: 11px;
+    color: var(--text-muted);
+    font-style: italic;
+    margin-top: 4px;
+    font-weight: normal;
+  }
+  table.matrix td {
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--border);
+    border-right: 1px solid var(--border);
+    vertical-align: top;
+    line-height: 1.5;
+  }
+  table.matrix td:last-child { border-right: 0; }
+  table.matrix tr:last-child td { border-bottom: 0; }
+  table.matrix tr:hover td { background: var(--bg-panel); }
+
+  .doc-cell { display: flex; gap: 10px; align-items: flex-start; }
+  .doc-thumb { width: 28px; height: 36px; background: var(--bg); border: 1px solid var(--border-emph); border-radius: 2px; display: flex; align-items: center; justify-content: center; font-size: 9px; color: var(--text-faint); flex-shrink: 0; }
+  .doc-name { font-weight: 500; color: var(--text); margin-bottom: 2px; font-family: var(--serif); }
+  .doc-meta { font-size: 11px; color: var(--text-faint); }
+
+  .cell-value { color: var(--text); }
+  .cell-cite { display: inline-block; font-size: 10px; color: var(--accent); background: var(--accent-soft); padding: 0 5px; border-radius: 2px; margin-left: 4px; font-family: ui-monospace, monospace; cursor: pointer; }
+  .cell-none { color: var(--text-faint); font-style: italic; }
+  .cell-loading { color: var(--text-faint); font-style: italic; }
+  .cell-loading::after { content: "▍"; color: var(--accent); animation: blink 1s infinite; }
+  @keyframes blink { 50% { opacity: 0; } }
+
+  .col-num { width: 32px; color: var(--text-faint); font-family: ui-monospace, monospace; font-size: 11px; text-align: right; padding-right: 8px; }
+
+  .add-row { padding: 12px 16px; text-align: center; color: var(--text-muted); font-size: 12px; background: var(--bg-elev); border-top: 1px solid var(--border); cursor: pointer; }
+  .add-row:hover { color: var(--text); }
+
+  .col-add { background: var(--bg-elev); padding: 14px 16px; color: var(--accent); font-size: 12px; cursor: pointer; text-align: center; vertical-align: middle; }
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <aside class="sidebar">
+    <div class="sidebar-brand">NeuralChain<span style="color:var(--accent)">.</span></div>
+    <div class="sidebar-section">Workspace</div>
+    <a class="nav-item" href="dashboard.html"><span class="ico">⌂</span> Home</a>
+    <a class="nav-item" href="assistant.html"><span class="ico">✦</span> Assistant</a>
+    <a class="nav-item" href="workflows.html"><span class="ico">⟳</span> Agents</a>
+    <div class="sidebar-section">Modules</div>    <a class="nav-item" href="research.html"><span class="ico">◊</span> Research</a>
+    <a class="nav-item active" href="diligence.html"><span class="ico">⊞</span> Diligence</a>    <a class="nav-item" href="review.html"><span class="ico">▤</span> Review</a>
+    <a class="nav-item" href="playbooks.html"><span class="ico">❏</span> Playbooks</a>
+    <a class="nav-item" href="draft.html"><span class="ico">✎</span> Draft</a>
+    <div class="sidebar-section">Admin</div>
+    <a class="nav-item" href="#"><span class="ico">⚿</span> Security</a>
+    <a class="nav-item" href="settings.html"><span class="ico">⚙</span> Settings</a>
+    <div class="sidebar-footer">
+      <div style="color:var(--text-muted);">Acme Legal · prod</div>
+      <div>Deployed in your VPC</div>
+    </div>
+  </aside>
+
+  <main class="main">
+
+    <div class="page-head">
+      <div>
+        <div style="font-size: 11px; letter-spacing: 0.12em; color: var(--accent); text-transform: uppercase; margin-bottom: 8px;">Powered by Onyx · batch retrieval · LLM gateway</div>
+        <h1 class="page-title">Diligence</h1>
+        <p class="page-sub">Extract structured data across thousands of documents. Each cell is a separate retrieval + LLM call against your private corpus.</p>
+      </div>
+      <div class="page-actions">
+        <button class="btn">Load template</button>
+        <button class="btn">Save grid</button>
+        <button class="btn btn-primary">+ New grid</button>
+      </div>
+    </div>
+
+    <!-- Toolbar -->
+    <div class="toolbar">
+      <div class="toolbar-left">
+        <span class="toolbar-title">Q1 2026 M&amp;A Deal Points</span>
+        <span class="toolbar-meta">·</span>
+        <span class="toolbar-meta">14 documents · 6 columns · Project Phoenix folder</span>
+      </div>
+      <div class="toolbar-right">
+        <button class="icon-btn" title="Filter">⌕</button>
+        <button class="icon-btn" title="Sort">⇅</button>
+        <button class="icon-btn" title="Export">⇩</button>
+        <button class="icon-btn" title="Automate">⚙</button>
+        <button class="icon-btn" title="Share">⤴</button>
+      </div>
+    </div>
+
+    <!-- Progress -->
+    <div class="progress">
+      <span><strong style="color:var(--text)">Running:</strong> Reverse Termination column · 10 of 14 cells complete</span>
+      <div style="display:flex; gap:16px; align-items:center;">
+        <span>73%</span>
+        <div class="progress-bar"><div></div></div>
+        <button style="background:none; color:var(--text-muted); border:0; font-size:12px; cursor:pointer;">Pause</button>
+      </div>
+    </div>
+
+    <!-- Diligence grid -->
+    <div class="matrix-wrap">
+      <table class="matrix">
+        <thead>
+          <tr>
+            <th class="col-num">#</th>
+            <th style="width: 22%;">Document</th>
+            <th>Consideration<span class="col-prompt">What's the consideration type?</span></th>
+            <th>Indemnity Cap<span class="col-prompt">What's the indemnity cap or floor?</span></th>
+            <th>Earn-Out<span class="col-prompt">Is there an earn-out? Terms?</span></th>
+            <th>Governing Law<span class="col-prompt">Which jurisdiction?</span></th>
+            <th>Reverse Termination<span class="col-prompt">Reverse termination fee?</span></th>
+            <th class="col-add">+ Add</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="col-num">1</td>
+            <td><div class="doc-cell"><div class="doc-thumb">.docx</div><div><div class="doc-name">Project Jazz APA</div><div class="doc-meta">2026-02-14 · iManage · 47p</div></div></div></td>
+            <td><span class="cell-value">Cash <span class="cell-cite">§2.1</span></span></td>
+            <td><span class="cell-value">12 months fees, mutual <span class="cell-cite">§8.5</span></span></td>
+            <td><span class="cell-value">$8M if revenue exceeds $24M in FY27 <span class="cell-cite">§3.2</span></span></td>
+            <td><span class="cell-value">Delaware <span class="cell-cite">§14.1</span></span></td>
+            <td><span class="cell-value">$3M if Buyer financing fails <span class="cell-cite">§13.4</span></span></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td class="col-num">2</td>
+            <td><div class="doc-cell"><div class="doc-thumb">.docx</div><div><div class="doc-name">Ocean &lt;&gt; Alpha MIPA</div><div class="doc-meta">2026-01-30 · iManage · 89p</div></div></div></td>
+            <td><span class="cell-value">Cash + Stock <span class="cell-cite">§2.1</span></span></td>
+            <td><span class="cell-value">$15M cap (10% PP) <span class="cell-cite">§9.1</span></span></td>
+            <td><span class="cell-value">10% of PP contingent on user growth <span class="cell-cite">§3.4</span></span></td>
+            <td><span class="cell-value">Delaware <span class="cell-cite">§13.1</span></span></td>
+            <td><span class="cell-value">$5M reverse termination fee <span class="cell-cite">§12.6</span></span></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td class="col-num">3</td>
+            <td><div class="doc-cell"><div class="doc-thumb">.docx</div><div><div class="doc-name">Wonder Corp. SPA</div><div class="doc-meta">2026-01-12 · iManage · 62p</div></div></div></td>
+            <td><span class="cell-value">Stock <span class="cell-cite">§2.1</span></span></td>
+            <td><span class="cell-value">R&amp;W insurance, no separate cap <span class="cell-cite">§8.2</span></span></td>
+            <td><span class="cell-value">$1.5M if MAU exceeds 250K <span class="cell-cite">§4.1</span></span></td>
+            <td><span class="cell-value">New York <span class="cell-cite">§14.2</span></span></td>
+            <td><span class="cell-value">$2M if antitrust fails <span class="cell-cite">§12.3</span></span></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td class="col-num">4</td>
+            <td><div class="doc-cell"><div class="doc-thumb">.docx</div><div><div class="doc-name">Project Beacon Merger</div><div class="doc-meta">2025-12-22 · iManage · 134p</div></div></div></td>
+            <td><span class="cell-value">Stock <span class="cell-cite">§2.1</span></span></td>
+            <td><span class="cell-value">10% PP, with R&amp;W on top <span class="cell-cite">§8.3</span></span></td>
+            <td><span class="cell-none">No earn-out</span></td>
+            <td><span class="cell-value">Delaware <span class="cell-cite">§13.1</span></span></td>
+            <td><span class="cell-value">$1.5M (DOJ failure) <span class="cell-cite">§11.4</span></span></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td class="col-num">5</td>
+            <td><div class="doc-cell"><div class="doc-thumb">.docx</div><div><div class="doc-name">Project Titan MA</div><div class="doc-meta">2025-12-08 · iManage · 71p</div></div></div></td>
+            <td><span class="cell-value">Cash <span class="cell-cite">§2.1</span></span></td>
+            <td><span class="cell-value">$2M cap with basket <span class="cell-cite">§9.3</span></span></td>
+            <td><span class="cell-value">$2M if revenue grows 25% <span class="cell-cite">§3.5</span></span></td>
+            <td><span class="cell-value">California <span class="cell-cite">§14.2</span></span></td>
+            <td><span class="cell-value">$2M (Buyer financing) <span class="cell-cite">§13.1</span></span></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td class="col-num">6</td>
+            <td><div class="doc-cell"><div class="doc-thumb">.docx</div><div><div class="doc-name">Blvd Corp SPA</div><div class="doc-meta">2025-11-19 · iManage · 58p</div></div></div></td>
+            <td><span class="cell-value">Stock <span class="cell-cite">§2.1</span></span></td>
+            <td><span class="cell-value">R&amp;W insurance only <span class="cell-cite">§8.4</span></span></td>
+            <td><span class="cell-none">No earn-out</span></td>
+            <td><span class="cell-value">Delaware <span class="cell-cite">§13.1</span></span></td>
+            <td><span class="cell-value">$1.25M <span class="cell-cite">§12.2</span></span></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td class="col-num">7</td>
+            <td><div class="doc-cell"><div class="doc-thumb">.docx</div><div><div class="doc-name">Ocean-Athena MA</div><div class="doc-meta">2025-11-04 · iManage · 95p</div></div></div></td>
+            <td><span class="cell-value">Cash + Stock <span class="cell-cite">§2.1</span></span></td>
+            <td><span class="cell-value">12 months fees, one-way <span class="cell-cite">§9.1</span></span></td>
+            <td><span class="cell-value">$3M Buyer stock if DAU 35% <span class="cell-cite">§3.6</span></span></td>
+            <td><span class="cell-value">New York <span class="cell-cite">§13.2</span></span></td>
+            <td><span class="cell-value">$750K <span class="cell-cite">§12.1</span></span></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td class="col-num">8</td>
+            <td><div class="doc-cell"><div class="doc-thumb">.docx</div><div><div class="doc-name">Helio Industries APA</div><div class="doc-meta">2025-10-21 · iManage · 81p</div></div></div></td>
+            <td><span class="cell-value">Cash <span class="cell-cite">§2.1</span></span></td>
+            <td><span class="cell-value">$5M cap <span class="cell-cite">§9.2</span></span></td>
+            <td><span class="cell-none">No earn-out</span></td>
+            <td><span class="cell-value">Delaware <span class="cell-cite">§14.1</span></span></td>
+            <td><span class="cell-value cell-loading">analyzing</span></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td class="col-num">9</td>
+            <td><div class="doc-cell"><div class="doc-thumb">.docx</div><div><div class="doc-name">Sigma Partners SPA</div><div class="doc-meta">2025-10-10 · iManage · 67p</div></div></div></td>
+            <td><span class="cell-value">Cash <span class="cell-cite">§2.1</span></span></td>
+            <td><span class="cell-value">8 months fees <span class="cell-cite">§9.3</span></span></td>
+            <td><span class="cell-value">$1.2M revenue-tied <span class="cell-cite">§3.3</span></span></td>
+            <td><span class="cell-value">California <span class="cell-cite">§13.1</span></span></td>
+            <td><span class="cell-value cell-loading">analyzing</span></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td class="col-num">10</td>
+            <td><div class="doc-cell"><div class="doc-thumb">.docx</div><div><div class="doc-name">Pearl Holdings Merger</div><div class="doc-meta">2025-09-27 · iManage · 112p</div></div></div></td>
+            <td><span class="cell-value">Stock <span class="cell-cite">§2.1</span></span></td>
+            <td><span class="cell-value">R&amp;W + basket <span class="cell-cite">§8.6</span></span></td>
+            <td><span class="cell-none">No earn-out</span></td>
+            <td><span class="cell-value">Delaware <span class="cell-cite">§13.1</span></span></td>
+            <td><span class="cell-value cell-loading">analyzing</span></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td class="col-num">11</td>
+            <td><div class="doc-cell"><div class="doc-thumb">.docx</div><div><div class="doc-name">Aurora Bio APA</div><div class="doc-meta">2025-09-15 · iManage · 87p</div></div></div></td>
+            <td><span class="cell-value">Cash + Earnout <span class="cell-cite">§2.1</span></span></td>
+            <td><span class="cell-value">$4M cap <span class="cell-cite">§9.1</span></span></td>
+            <td><span class="cell-value">$5M FDA milestone <span class="cell-cite">§3.7</span></span></td>
+            <td><span class="cell-value">Delaware <span class="cell-cite">§14.1</span></span></td>
+            <td><span class="cell-value cell-loading">analyzing</span></td>
+            <td></td>
+          </tr>
+          <tr style="color: var(--text-faint);">
+            <td class="col-num">12-14</td>
+            <td colspan="6" style="text-align: center; padding: 12px; color: var(--text-faint); font-style: italic;">3 more documents in queue · scheduled</td>
+            <td></td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="add-row">+ Add row · upload doc or import from Connect</div>
+    </div>
+
+    <div style="margin-top: 20px; padding: 16px 20px; background: var(--bg-elev); border: 1px solid var(--border); border-radius: 6px; display: flex; gap: 24px; font-size: 12px; color: var(--text-muted);">
+      <span><strong style="color: var(--text)">Source:</strong> Project Phoenix folder · iManage</span>
+      <span>·</span>
+      <span><strong style="color: var(--text)">Retrieval:</strong> Onyx hybrid (BM25 + vector)</span>
+      <span>·</span>
+      <span><strong style="color: var(--text)">Model:</strong> Claude Sonnet 4.6 (in-VPC)</span>
+      <span>·</span>
+      <span><strong style="color: var(--text)">Total cells:</strong> 84 · <strong style="color: var(--text)">~62</strong> complete · est. <strong style="color: var(--text)">$3.40</strong></span>
+    </div>
+
+  </main>
+
+</div>
+
+</body>
+</html>

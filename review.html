@@ -1,0 +1,284 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Review — NeuralChain</title>
+<link rel="stylesheet" href="_shared.css">
+<style>
+  .rev-summary { display:flex; justify-content:space-between; align-items:center; padding:16px 20px; background:var(--bg-elev); border:1px solid var(--border); border-radius:6px; margin-bottom:18px; }
+  .rev-doc { display:flex; gap:12px; align-items:center; }
+  .rev-thumb { width:34px; height:44px; background:var(--bg); border:1px solid var(--border-emph); border-radius:3px; display:flex; align-items:center; justify-content:center; font-size:9px; color:var(--text-faint); flex-shrink:0; }
+  .rev-doc-name { font-family:var(--serif); font-size:17px; }
+  .rev-doc-meta { font-size:12px; color:var(--text-faint); }
+  .rev-score { display:flex; gap:22px; align-items:center; text-align:right; }
+  .rev-score .num { font-family:var(--serif); font-size:22px; line-height:1; }
+  .rev-score .lbl { font-size:11px; color:var(--text-faint); text-transform:uppercase; letter-spacing:0.05em; margin-top:4px; }
+  .num.high { color:#ef9a9a; } .num.med { color:#f4c47a; } .num.low { color:#82d5a3; }
+
+  .filter-row { display:flex; gap:6px; margin-bottom:16px; align-items:center; }
+  .fchip { padding:5px 12px; border-radius:999px; font-size:12px; border:1px solid var(--border-emph); background:var(--bg-elev); color:var(--text-muted); cursor:pointer; }
+  .fchip.active { background:var(--bg-panel); color:var(--text); border-color:var(--text-muted); }
+
+  .rev-layout { display:grid; grid-template-columns: 1fr 0.85fr; gap:24px; align-items:start; }
+
+  .issues { display:flex; flex-direction:column; gap:12px; }
+  .issue { background:var(--bg-elev); border:1px solid var(--border); border-radius:6px; padding:16px 18px; }
+  .issue.high { border-left:2px solid var(--sev-high); }
+  .issue.med  { border-left:2px solid var(--sev-med); }
+  .issue.low  { border-left:2px solid var(--sev-low); }
+  .issue-head { display:flex; justify-content:space-between; align-items:baseline; gap:12px; margin-bottom:8px; }
+  .issue-title { font-family:var(--serif); font-size:15px; }
+  .issue-ref { font-size:11px; color:var(--text-faint); font-family:ui-monospace,monospace; white-space:nowrap; }
+  .issue-body { font-size:13px; color:var(--text-muted); line-height:1.65; }
+  .issue-body b { color:var(--text); font-weight:500; }
+  .redline { margin-top:10px; padding:10px 12px; background:var(--bg); border:1px solid var(--border); border-radius:4px; font-family:var(--serif); font-size:13px; line-height:1.7; }
+  .redline .del { color:#ef9a9a; text-decoration:line-through; }
+  .redline .ins { color:#82d5a3; }
+  .issue-actions { display:flex; gap:6px; margin-top:12px; }
+  .issue-foot { margin-top:10px; font-size:11px; color:var(--text-faint); }
+  .issue-foot a { color:var(--accent); }
+
+  .doc-pane { position:sticky; top:24px; background:var(--bg-elev); border:1px solid var(--border); border-radius:6px; overflow:hidden; }
+  .doc-pane-head { padding:12px 16px; border-bottom:1px solid var(--border); font-size:12px; color:var(--text-muted); display:flex; justify-content:space-between; }
+  .doc-text { padding:20px 22px; font-family:var(--serif); font-size:13px; line-height:1.9; color:var(--text-muted); max-height:72vh; overflow:auto; }
+  .doc-text h4 { font-size:11px; letter-spacing:0.06em; text-transform:uppercase; color:var(--text-faint); margin:18px 0 6px; font-family:var(--sans); }
+  .doc-text h4:first-child { margin-top:0; }
+  .hl-high { background:rgba(197,48,48,0.16); border-bottom:1px solid var(--sev-high); padding:1px 2px; }
+  .hl-med  { background:rgba(197,122,32,0.16); border-bottom:1px solid var(--sev-med); padding:1px 2px; }
+  .hl-low  { background:rgba(34,116,77,0.16); border-bottom:1px solid var(--sev-low); padding:1px 2px; }
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <aside class="sidebar">
+    <div class="sidebar-brand">NeuralChain<span style="color:var(--accent)">.</span></div>
+    <div class="sidebar-section">Workspace</div>
+    <a class="nav-item" href="dashboard.html"><span class="ico">⌂</span> Home</a>
+    <a class="nav-item" href="assistant.html"><span class="ico">✦</span> Assistant</a>
+    <a class="nav-item" href="workflows.html"><span class="ico">⟳</span> Agents</a>
+    <div class="sidebar-section">Modules</div>
+    <a class="nav-item" href="research.html"><span class="ico">◊</span> Research</a>
+    <a class="nav-item" href="diligence.html"><span class="ico">⊞</span> Diligence</a>
+    <a class="nav-item active" href="review.html"><span class="ico">▤</span> Review</a>
+    <a class="nav-item" href="playbooks.html"><span class="ico">❏</span> Playbooks</a>
+    <a class="nav-item" href="draft.html"><span class="ico">✎</span> Draft</a>
+    <div class="sidebar-section">Admin</div>
+    <a class="nav-item" href="#"><span class="ico">⚿</span> Security</a>
+    <a class="nav-item" href="settings.html"><span class="ico">⚙</span> Settings</a>
+    <div class="sidebar-footer">
+      <div style="color:var(--text-muted);">Acme Legal · prod</div>
+      <div>Deployed in your VPC</div>
+    </div>
+  </aside>
+
+  <main class="main">
+
+    <div class="page-head">
+      <div>
+        <div style="font-size: 11px; letter-spacing: 0.12em; color: var(--accent); text-transform: uppercase; margin-bottom: 8px;">Playbook-driven · clause-level · severity-scored</div>
+        <h1 class="page-title">Review</h1>
+        <p class="page-sub">Check a single contract against your firm's playbook. Every clause scored for risk, with redlines grounded in your own standards — not generic market norms.</p>
+      </div>
+      <div class="page-actions">
+        <button class="btn">Upload contract</button>
+        <a class="btn" href="playbook-edit.html">Playbook: Acme v4</a>
+        <button class="btn btn-primary">Export marked-up .docx</button>
+      </div>
+    </div>
+
+    <!-- Document + score summary -->
+    <div class="rev-summary">
+      <div class="rev-doc">
+        <div class="rev-thumb">.docx</div>
+        <div>
+          <div class="rev-doc-name">Vendor MSA — Apollo Industries</div>
+          <div class="rev-doc-meta">Counterparty paper · 34 pages · uploaded 6m ago · checked against Acme Legal Playbook v4 (38 rules)</div>
+        </div>
+      </div>
+      <div class="rev-score">
+        <div><div class="num high">2</div><div class="lbl">High</div></div>
+        <div><div class="num med">3</div><div class="lbl">Medium</div></div>
+        <div><div class="num low">2</div><div class="lbl">Low</div></div>
+        <div><div class="num">31</div><div class="lbl">Pass</div></div>
+      </div>
+    </div>
+
+    <div class="filter-row">
+      <span class="fchip active">All issues (7)</span>
+      <span class="fchip">High (2)</span>
+      <span class="fchip">Medium (3)</span>
+      <span class="fchip">Low (2)</span>
+      <span style="margin-left:auto; font-size:12px; color:var(--text-faint);">Sorted by severity</span>
+    </div>
+
+    <div class="rev-layout">
+
+      <!-- LEFT: issue cards -->
+      <div class="issues">
+
+        <div class="issue high">
+          <div class="issue-head">
+            <span class="issue-title">Limitation of liability — uncapped</span>
+            <span class="issue-ref">§11.2</span>
+          </div>
+          <div class="issue-body">
+            The agreement places <b>no cap</b> on the vendor's aggregate liability. Your playbook requires a cap of <b>12 months' fees</b> for vendor-side MSAs of this size. Leaving liability uncapped is the single highest-exposure deviation in this contract.
+          </div>
+          <div class="redline">
+            "…each party's total aggregate liability under this Agreement <span class="ins">shall not exceed the fees paid by Customer in the twelve (12) months preceding the claim</span>."
+          </div>
+          <div class="issue-actions">
+            <button class="btn btn-primary">Accept redline</button>
+            <button class="btn">Insert comment</button>
+            <button class="btn">Ignore</button>
+          </div>
+          <div class="issue-foot">Playbook rule <a href="#">LoL-01 · Liability cap required</a> · 142 of your executed MSAs use this language</div>
+        </div>
+
+        <div class="issue high">
+          <div class="issue-head">
+            <span class="issue-title">Indemnification is one-way</span>
+            <span class="issue-ref">§9.1</span>
+          </div>
+          <div class="issue-body">
+            Indemnity runs <b>only in Apollo's favor</b>. Your playbook requires <b>mutual</b> indemnification for third-party IP and confidentiality claims. As drafted, Acme carries unreciprocated risk.
+          </div>
+          <div class="redline">
+            "<span class="del">Customer shall indemnify Vendor</span><span class="ins">Each party shall indemnify the other</span> against any third-party claim arising from…"
+          </div>
+          <div class="issue-actions">
+            <button class="btn btn-primary">Accept redline</button>
+            <button class="btn">Insert comment</button>
+            <button class="btn">Ignore</button>
+          </div>
+          <div class="issue-foot">Playbook rule <a href="#">IND-02 · Mutual indemnity</a></div>
+        </div>
+
+        <div class="issue med">
+          <div class="issue-head">
+            <span class="issue-title">Auto-renewal opt-out window too long</span>
+            <span class="issue-ref">§3.4</span>
+          </div>
+          <div class="issue-body">
+            Auto-renews annually unless cancelled <b>90 days</b> before term end. Your playbook caps the opt-out notice at <b>30 days</b> to preserve flexibility.
+          </div>
+          <div class="redline">
+            "…unless either party gives written notice at least <span class="del">ninety (90)</span><span class="ins">thirty (30)</span> days prior to the end of the then-current term."
+          </div>
+          <div class="issue-actions">
+            <button class="btn btn-primary">Accept redline</button>
+            <button class="btn">Insert comment</button>
+            <button class="btn">Ignore</button>
+          </div>
+          <div class="issue-foot">Playbook rule <a href="#">REN-01 · Opt-out ≤ 30 days</a></div>
+        </div>
+
+        <div class="issue med">
+          <div class="issue-head">
+            <span class="issue-title">Governing law off-standard</span>
+            <span class="issue-ref">§14.1</span>
+          </div>
+          <div class="issue-body">
+            Governed by <b>New York</b> law. Acme's standard for vendor agreements is <b>Delaware</b>. Flag for negotiation rather than auto-redline — fallback position is acceptable if the counterparty pushes back.
+          </div>
+          <div class="issue-actions">
+            <button class="btn">Suggest Delaware</button>
+            <button class="btn">Insert comment</button>
+            <button class="btn">Accept as fallback</button>
+          </div>
+          <div class="issue-foot">Playbook rule <a href="#">GOV-01 · Delaware preferred</a> · marked "negotiable"</div>
+        </div>
+
+        <div class="issue med">
+          <div class="issue-head">
+            <span class="issue-title">No termination for convenience</span>
+            <span class="issue-ref">missing</span>
+          </div>
+          <div class="issue-body">
+            The contract has <b>no for-convenience termination right</b>. Your playbook requires a <b>30-day</b> termination-for-convenience option for the customer.
+          </div>
+          <div class="issue-actions">
+            <button class="btn btn-primary">Insert clause</button>
+            <button class="btn">Insert comment</button>
+            <button class="btn">Ignore</button>
+          </div>
+          <div class="issue-foot">Playbook rule <a href="#">TRM-03 · Termination for convenience</a></div>
+        </div>
+
+        <div class="issue low">
+          <div class="issue-head">
+            <span class="issue-title">Assignment silent on change of control</span>
+            <span class="issue-ref">§13.2</span>
+          </div>
+          <div class="issue-body">
+            Assignment clause does not address <b>change of control</b>. Low risk, but your playbook prefers explicit consent on M&amp;A events.
+          </div>
+          <div class="issue-actions">
+            <button class="btn">Insert clause</button>
+            <button class="btn">Ignore</button>
+          </div>
+          <div class="issue-foot">Playbook rule <a href="#">ASN-02</a></div>
+        </div>
+
+        <div class="issue low">
+          <div class="issue-head">
+            <span class="issue-title">Notices by physical mail only</span>
+            <span class="issue-ref">§15.3</span>
+          </div>
+          <div class="issue-body">
+            Notice provision permits <b>certified mail only</b>. Playbook prefers adding email as a valid notice channel.
+          </div>
+          <div class="issue-actions">
+            <button class="btn">Add email notice</button>
+            <button class="btn">Ignore</button>
+          </div>
+          <div class="issue-foot">Playbook rule <a href="#">NOT-01</a></div>
+        </div>
+
+      </div>
+
+      <!-- RIGHT: document pane -->
+      <div class="doc-pane">
+        <div class="doc-pane-head">
+          <span>Vendor MSA — Apollo Industries</span>
+          <span>2 high · 3 med · 2 low highlighted</span>
+        </div>
+        <div class="doc-text">
+          <h4>§3.4 — Term &amp; Renewal</h4>
+          This Agreement shall remain in effect for an initial term of one (1) year and shall automatically renew for successive one-year terms <span class="hl-med">unless either party gives written notice at least ninety (90) days prior to the end of the then-current term</span>.
+
+          <h4>§9.1 — Indemnification</h4>
+          <span class="hl-high">Customer shall indemnify, defend, and hold harmless Vendor</span> from and against any and all third-party claims, damages, and expenses arising out of or relating to Customer's use of the Services.
+
+          <h4>§11.2 — Limitation of Liability</h4>
+          Except for breaches of confidentiality, <span class="hl-high">no limitation shall apply to the aggregate liability of either party under this Agreement</span>, and each party shall be liable for all direct and consequential damages.
+
+          <h4>§13.2 — Assignment</h4>
+          Neither party may assign this Agreement without the prior written consent of the other party, <span class="hl-low">such consent not to be unreasonably withheld</span>.
+
+          <h4>§14.1 — Governing Law</h4>
+          This Agreement shall be governed by and construed in accordance with the laws of the <span class="hl-med">State of New York</span>, without regard to its conflict-of-laws provisions.
+
+          <h4>§15.3 — Notices</h4>
+          All notices shall be in writing and delivered by <span class="hl-low">certified mail, return receipt requested</span>, to the addresses set forth above.
+        </div>
+      </div>
+
+    </div>
+
+    <div style="margin-top: 20px; padding: 16px 20px; background: var(--bg-elev); border: 1px solid var(--border); border-radius: 6px; display: flex; gap: 24px; font-size: 12px; color: var(--text-muted);">
+      <span><strong style="color: var(--text)">Playbook:</strong> Acme Legal v4 · 38 rules · 31 passed</span>
+      <span>·</span>
+      <span><strong style="color: var(--text)">Model:</strong> Claude Sonnet 4.6 (in-VPC)</span>
+      <span>·</span>
+      <span><strong style="color: var(--text)">Redlines</strong> drawn from your executed precedents, never generic templates</span>
+    </div>
+
+  </main>
+
+</div>
+
+</body>
+</html>

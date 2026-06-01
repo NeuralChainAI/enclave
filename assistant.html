@@ -1,0 +1,231 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Assistant — NeuralChain</title>
+<link rel="stylesheet" href="_shared.css">
+<style>
+  .chat-wrap { display: grid; grid-template-columns: 1fr 340px; gap: 24px; }
+
+  .thread { display: flex; flex-direction: column; gap: 22px; padding-bottom: 24px; }
+  .turn { display: flex; gap: 12px; }
+  .turn.user { flex-direction: row-reverse; }
+  .avatar { width: 28px; height: 28px; border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 13px; }
+  .avatar.ai { background: var(--accent-soft); color: var(--text); border: 1px solid var(--accent); }
+  .avatar.me { background: var(--bg-panel); color: var(--text-muted); border: 1px solid var(--border-emph); }
+
+  .bubble { max-width: 700px; }
+  .bubble.user-b { background: var(--bg-panel); border: 1px solid var(--border-emph); border-radius: 10px 10px 2px 10px; padding: 12px 16px; font-size: 14px; line-height: 1.55; }
+
+  .ai-text { line-height: 1.65; font-size: 14px; color: var(--text); }
+  .ai-text p { margin-bottom: 10px; }
+  .ai-text strong { color: var(--text); }
+  .ai-bullets { padding-left: 4px; }
+  .ai-bullets p { margin-bottom: 6px; }
+  .cite { display: inline-flex; align-items: center; justify-content: center; min-width: 18px; height: 18px; padding: 0 5px; margin: 0 1px; font-size: 10px; background: var(--accent-soft); color: var(--text); border-radius: 3px; font-family: ui-monospace, monospace; vertical-align: 2px; cursor: pointer; }
+  .cite:hover { background: var(--accent); }
+
+  .ai-meta { display: flex; gap: 14px; margin-top: 12px; font-size: 11px; color: var(--text-faint); }
+  .actions-inline { display: flex; gap: 8px; margin-top: 14px; flex-wrap: wrap; }
+  .act-chip { padding: 7px 13px; border: 1px solid var(--accent-soft); border-radius: 6px; font-size: 12px; color: #82d5a3; background: rgba(26,122,82,0.10); display: inline-flex; gap: 6px; align-items: center; }
+  .act-chip:hover { background: rgba(26,122,82,0.20); }
+  .act-chip.plain { border-color: var(--border-emph); color: var(--text-muted); background: var(--bg-elev); }
+
+  .draft-card { margin-top: 12px; background: var(--bg); border: 1px solid var(--border-emph); border-radius: 6px; padding: 16px; font-family: var(--serif); font-size: 13px; line-height: 1.6; color: var(--text-muted); }
+  .draft-card .dh { font-family: var(--sans); font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-faint); margin-bottom: 10px; }
+
+  /* composer */
+  .composer { margin-top: 22px; }
+  .composer-box { background: var(--bg-elev); border: 1px solid var(--border-emph); border-radius: 8px; padding: 12px 14px; }
+  .composer-box textarea { width: 100%; background: transparent; border: 0; color: var(--text); font-family: inherit; font-size: 14px; resize: none; line-height: 1.5; }
+  .composer-box textarea:focus { outline: none; }
+  .composer-box textarea::placeholder { color: var(--text-subtle); }
+  .composer-foot { display: flex; align-items: center; gap: 8px; margin-top: 10px; }
+  .composer-foot .spacer { flex: 1; }
+  .pill { padding: 5px 10px; border: 1px solid var(--border-emph); border-radius: 999px; font-size: 12px; color: var(--text-muted); cursor: pointer; }
+  .pill:hover { color: var(--text); }
+  .composer-note { font-size: 11px; color: var(--text-faint); margin-top: 8px; text-align: center; }
+
+  /* context rail */
+  .ctx { background: var(--bg-elev); border: 1px solid var(--border); border-radius: 6px; position: sticky; top: 24px; height: fit-content; }
+  .ctx-head { padding: 14px 16px; border-bottom: 1px solid var(--border); font-family: var(--serif); font-size: 15px; }
+  .ctx-sec { padding: 14px 16px; border-bottom: 1px solid var(--border); }
+  .ctx-sec:last-child { border-bottom: 0; }
+  .ctx-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-faint); margin-bottom: 10px; }
+  .ctx-scope { font-size: 13px; color: var(--text); }
+  .ctx-scope .edit { font-size: 12px; color: var(--accent-hover); margin-left: 6px; }
+  .ctx-doc { display: flex; gap: 8px; align-items: baseline; padding: 5px 0; font-size: 12px; color: var(--text-muted); }
+  .ctx-doc .n { font-family: ui-monospace, monospace; font-size: 10px; color: var(--accent); background: var(--accent-soft); padding: 1px 5px; border-radius: 3px; }
+  .ctx-handoff { display: flex; flex-direction: column; gap: 8px; }
+  .ctx-handoff .btn { text-align: left; }
+  .ctx-thread { font-size: 13px; color: var(--text-muted); padding: 6px 0; cursor: pointer; }
+  .ctx-thread:hover { color: var(--text); }
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <!-- ============ LEFT SIDEBAR ============ -->
+  <aside class="sidebar">
+    <div class="sidebar-brand">NeuralChain<span style="color:var(--accent)">.</span></div>
+
+    <div class="sidebar-section">Workspace</div>
+    <a class="nav-item" href="dashboard.html"><span class="ico">⌂</span> Home</a>
+    <a class="nav-item active" href="assistant.html"><span class="ico">✦</span> Assistant</a>
+    <a class="nav-item" href="workflows.html"><span class="ico">⟳</span> Agents</a>
+
+    <div class="sidebar-section">Modules</div>
+    <a class="nav-item" href="research.html"><span class="ico">◊</span> Research</a>
+    <a class="nav-item" href="diligence.html"><span class="ico">⊞</span> Diligence</a>    <a class="nav-item" href="review.html"><span class="ico">▤</span> Review</a>
+    <a class="nav-item" href="playbooks.html"><span class="ico">❏</span> Playbooks</a>
+    <a class="nav-item" href="draft.html"><span class="ico">✎</span> Draft</a>
+
+    <div class="sidebar-section">Admin</div>
+    <a class="nav-item" href="#"><span class="ico">⚿</span> Security</a>
+    <a class="nav-item" href="settings.html"><span class="ico">⚙</span> Settings</a>
+
+    <div class="sidebar-footer">
+      <div style="color:var(--text-muted);">Acme Legal · prod</div>
+      <div>Deployed in your VPC</div>
+    </div>
+  </aside>
+
+  <!-- ============ MAIN ============ -->
+  <main class="main">
+
+    <div class="page-head">
+      <div>
+        <div style="font-size: 11px; letter-spacing: 0.12em; color: var(--accent); text-transform: uppercase; margin-bottom: 8px;">Your AI co-counsel · grounded in your corpus · Claude Sonnet 4.6 in-VPC</div>
+        <h1 class="page-title">Assistant</h1>
+        <p class="page-sub">Discuss anything across your matters and contracts. Multi-turn, cites your own documents, and can hand work off to Diligence, Agents, or Draft.</p>
+      </div>
+      <div class="page-actions">
+        <button class="btn">History</button>
+        <button class="btn btn-primary">+ New thread</button>
+      </div>
+    </div>
+
+    <div class="chat-wrap">
+
+      <!-- LEFT: conversation -->
+      <div>
+        <div class="thread">
+
+          <!-- USER 1 -->
+          <div class="turn user">
+            <div class="avatar me">SM</div>
+            <div class="bubble user-b">Summarize our exposure on the Apollo Industries MSA renewal — what's changed since the last term, and where are we off our playbook?</div>
+          </div>
+
+          <!-- AI 1 -->
+          <div class="turn">
+            <div class="avatar ai">✦</div>
+            <div class="bubble">
+              <div class="ai-text">
+                <p>The Apollo Industries MSA renews <strong>2026-08-01</strong>. Comparing the renewal draft against the 2023 executed agreement <span class="cite">1</span> and your firm playbook <span class="cite">3</span>, three things stand out:</p>
+                <div class="ai-bullets">
+                  <p>· <strong>Liability cap dropped.</strong> The renewal proposes 6 months of fees; your 2023 term and your current playbook floor are both 12 months <span class="cite">1</span><span class="cite">3</span>. This is the most material drift.</p>
+                  <p>· <strong>Auto-renewal window widened</strong> from 30 to 90 days' notice <span class="cite">2</span> — harder to exit.</p>
+                  <p>· <strong>Indemnity now mutual</strong> where it was vendor-favoring before; this is actually closer to your preferred position <span class="cite">3</span>.</p>
+                </div>
+                <p>Net: one item meaningfully off-playbook (the cap), one procedural risk (notice window), one improvement. I'd prioritize renegotiating the cap back to 12 months.</p>
+              </div>
+              <div class="ai-meta">
+                <span>3 sources cited</span><span>Confidence: High</span><span>2.8s · in-VPC</span>
+              </div>
+              <div class="actions-inline">
+                <button class="act-chip">⊞ Run full drift check in Diligence</button>
+                <button class="act-chip">✎ Draft renegotiation memo</button>
+                <button class="act-chip">⚙ Set Auto-Renewal Watch on this contract</button>
+                <button class="act-chip plain">View sources</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- USER 2 -->
+          <div class="turn user">
+            <div class="avatar me">SM</div>
+            <div class="bubble user-b">Draft the renegotiation email to their counsel — firm but collaborative, and anchor on the 12-month cap.</div>
+          </div>
+
+          <!-- AI 2 -->
+          <div class="turn">
+            <div class="avatar ai">✦</div>
+            <div class="bubble">
+              <div class="ai-text">
+                <p>Here's a draft in Acme's house voice <span class="cite">4</span>:</p>
+              </div>
+              <div class="draft-card">
+                <div class="dh">Draft · email to Apollo counsel</div>
+                Dear Marcus,<br><br>
+                Thank you for sending the renewal draft — we're glad to continue the relationship. One point we'll need to align on before signature: the proposed limitation of liability at six months of fees. Our standard across renewals of this size is twelve months, consistent with our 2023 agreement, and we'd like to restore that figure. We're otherwise comfortable with the mutual indemnity revisions, which we view as a positive step…
+              </div>
+              <div class="actions-inline">
+                <button class="act-chip">✎ Open in Draft</button>
+                <button class="act-chip">⚙ Send for approval</button>
+                <button class="act-chip plain">Regenerate · warmer tone</button>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- COMPOSER -->
+        <div class="composer">
+          <div class="composer-box">
+            <textarea rows="2" placeholder="Ask a follow-up, or describe a task to run…"></textarea>
+            <div class="composer-foot">
+              <span class="pill">Scope: Apollo Industries ▾</span>
+              <span class="pill">Claude Sonnet 4.6 · in-VPC ▾</span>
+              <span class="pill">＋ Attach</span>
+              <span class="spacer"></span>
+              <button class="btn btn-primary">Send</button>
+            </div>
+          </div>
+          <div class="composer-note">Answers are grounded in your corpus and pin-cited. Nothing in this conversation leaves your VPC.</div>
+        </div>
+      </div>
+
+      <!-- RIGHT: context rail -->
+      <div class="ctx">
+        <div class="ctx-head">This conversation</div>
+
+        <div class="ctx-sec">
+          <div class="ctx-label">Grounded in</div>
+          <div class="ctx-scope">All matters · Apollo Industries folder <span class="edit">change</span></div>
+        </div>
+
+        <div class="ctx-sec">
+          <div class="ctx-label">Documents referenced</div>
+          <div class="ctx-doc"><span class="n">1</span> Apollo Industries MSA — 2023</div>
+          <div class="ctx-doc"><span class="n">2</span> Apollo renewal draft — 2026</div>
+          <div class="ctx-doc"><span class="n">3</span> Acme Indemnity &amp; LoL Playbook v3</div>
+          <div class="ctx-doc"><span class="n">4</span> Acme house-style corpus (drafting)</div>
+        </div>
+
+        <div class="ctx-sec">
+          <div class="ctx-label">Hand off this work</div>
+          <div class="ctx-handoff">
+            <button class="btn">⊞ Send to Diligence — full drift grid</button>
+            <button class="btn">⚙ Create an agent from this</button>
+            <button class="btn">✎ Open draft in Draft module</button>
+          </div>
+        </div>
+
+        <div class="ctx-sec">
+          <div class="ctx-label">Recent threads</div>
+          <div class="ctx-thread">Indemnity caps across SaaS MSAs</div>
+          <div class="ctx-thread">Datadog renewal — change-of-control</div>
+          <div class="ctx-thread">Q1 governing-law exceptions</div>
+        </div>
+      </div>
+
+    </div>
+
+  </main>
+
+</div>
+
+</body>
+</html>

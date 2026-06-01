@@ -1,0 +1,437 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Home — NeuralChain</title>
+<link rel="stylesheet" href="_shared.css">
+<style>
+  /* time range toggle */
+  .range { display: inline-flex; border: 1px solid var(--border-emph); border-radius: 999px; overflow: hidden; }
+  .range button { padding: 6px 14px; font-size: 12px; color: var(--text-muted); }
+  .range button.active { background: var(--bg-panel); color: var(--text); }
+  .range button:not(:last-child) { border-right: 1px solid var(--border); }
+
+  /* KPI strip */
+  .kpis { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 32px; }
+  .kpi { padding: 18px 20px; background: var(--bg-elev); border: 1px solid var(--border); border-radius: 6px; }
+  .kpi-num { font-family: var(--serif); font-size: 34px; line-height: 1; margin-bottom: 6px; }
+  .kpi-lbl { font-size: 12px; color: var(--text-muted); }
+  .kpi-delta { font-size: 11px; margin-top: 8px; }
+  .kpi-delta.up { color: var(--accent-hover); }
+  .kpi-delta.flat { color: var(--text-faint); }
+  .kpi-delta.warn { color: #f4c47a; }
+
+  /* attention band */
+  .section-label { font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-faint); margin-bottom: 12px; }
+  .attention { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 36px; }
+  .att-item { padding: 16px; background: var(--bg-elev); border: 1px solid var(--border); border-radius: 6px; border-left: 2px solid var(--border-emph); display: flex; flex-direction: column; gap: 6px; cursor: pointer; }
+  .att-item:hover { background: var(--bg-panel); }
+  .att-item.high { border-left-color: var(--sev-high); }
+  .att-item.med { border-left-color: var(--sev-med); }
+  .att-item.low { border-left-color: var(--accent); }
+  .att-count { font-family: var(--serif); font-size: 26px; line-height: 1; }
+  .att-text { font-size: 12px; color: var(--text-muted); }
+  .att-src { font-size: 11px; color: var(--text-faint); margin-top: auto; }
+
+  /* two-column body */
+  .dash-body { display: grid; grid-template-columns: 1fr 380px; gap: 24px; }
+
+  /* module summary cards */
+  .mod-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .mod {
+    padding: 20px;
+    background: var(--bg-elev);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    display: flex;
+    flex-direction: column;
+    cursor: pointer;
+  }
+  .mod:hover { border-color: var(--border-emph); background: var(--bg-panel); }
+  .mod.idle { opacity: 0.78; }
+  .mod-head { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+  .mod-icon { width: 30px; height: 30px; border-radius: 4px; background: var(--bg); border: 1px solid var(--border-emph); display: flex; align-items: center; justify-content: center; font-family: var(--serif); font-size: 14px; color: var(--text-muted); }
+  .mod-name { font-family: var(--serif); font-size: 17px; }
+  .mod-tier { font-size: 10px; letter-spacing: 0.05em; color: var(--text-faint); text-transform: uppercase; }
+  .mod-open { margin-left: auto; font-size: 12px; color: var(--text-muted); }
+  .mod:hover .mod-open { color: var(--accent-hover); }
+  .mod-metric { font-family: var(--serif); font-size: 26px; line-height: 1; margin-bottom: 4px; }
+  .mod-metric small { font-size: 13px; color: var(--text-muted); font-family: var(--sans); }
+  .mod-line { font-size: 12px; color: var(--text-muted); margin-bottom: 14px; }
+
+  /* mini bar sparkline */
+  .spark { display: flex; align-items: flex-end; gap: 3px; height: 34px; margin-top: auto; }
+  .spark span { flex: 1; background: var(--accent-soft); border-radius: 1px 1px 0 0; min-height: 2px; }
+  .spark span.peak { background: var(--accent-hover); }
+
+  /* activity feed */
+  .feed { background: var(--bg-elev); border: 1px solid var(--border); border-radius: 6px; position: sticky; top: 24px; height: fit-content; }
+  .feed-head { padding: 16px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+  .feed-head h3 { font-family: var(--serif); font-size: 16px; }
+  .feed-head .all { font-size: 12px; color: var(--text-muted); }
+  .ev { padding: 12px 16px; border-bottom: 1px solid var(--border); display: flex; gap: 10px; }
+  .ev:last-child { border-bottom: 0; }
+  .ev-rail { display: flex; flex-direction: column; align-items: center; padding-top: 3px; }
+  .ev-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--text-faint); }
+  .ev-dot.connect { background: #6fa8dc; }
+  .ev-dot.vault { background: var(--accent-hover); }
+  .ev-dot.matrix { background: #b48ead; }
+  .ev-dot.workflows { background: #f4c47a; }
+  .ev-dot.review { background: #ef9a9a; }
+  .ev-body { flex: 1; }
+  .ev-text { font-size: 13px; color: var(--text); line-height: 1.45; }
+  .ev-text b { font-weight: 600; }
+  .ev-meta { font-size: 11px; color: var(--text-faint); margin-top: 3px; }
+  .ev-mod { color: var(--text-muted); }
+
+  .health { padding: 14px 16px; font-size: 12px; color: var(--text-muted); border-top: 1px solid var(--border); display: flex; align-items: center; gap: 8px; }
+
+  /* AI ask hero */
+  .ask-hero { background: linear-gradient(180deg, var(--bg-panel), var(--bg-elev)); border: 1px solid var(--border-emph); border-radius: 8px; padding: 22px 24px; margin-bottom: 28px; }
+  .ask-hero-label { font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); margin-bottom: 12px; }
+  .ask-box { display: flex; align-items: center; gap: 12px; background: var(--bg); border: 1px solid var(--border-emph); border-radius: 6px; padding: 12px 14px; }
+  .ask-box .ask-ico { color: var(--accent); font-size: 16px; }
+  .ask-box input { flex: 1; background: transparent; border: 0; color: var(--text); font-family: inherit; font-size: 15px; }
+  .ask-box input::placeholder { color: var(--text-subtle); }
+  .ask-box input:focus { outline: none; }
+  .ask-suggest { display: flex; align-items: center; gap: 8px; margin-top: 12px; flex-wrap: wrap; font-size: 12px; color: var(--text-faint); }
+  .ask-chip { padding: 5px 12px; border: 1px solid var(--border); border-radius: 999px; background: var(--bg-elev); color: var(--text-muted); font-size: 12px; }
+  .ask-chip:hover { border-color: var(--accent-soft); color: var(--text); }
+  .ask-open { margin-left: auto; color: var(--accent-hover); }
+
+  /* capability tiles */
+  .caps { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-bottom: 36px; }
+  .cap { padding: 16px; background: var(--bg-elev); border: 1px solid var(--border); border-radius: 6px; cursor: pointer; }
+  .cap:hover { border-color: var(--accent-soft); background: var(--bg-panel); }
+  .cap-ico { width: 28px; height: 28px; border-radius: 4px; background: var(--bg); border: 1px solid var(--border-emph); display: flex; align-items: center; justify-content: center; font-size: 14px; color: var(--accent-hover); margin-bottom: 10px; }
+  .cap-name { font-family: var(--serif); font-size: 15px; margin-bottom: 3px; }
+  .cap-desc { font-size: 11px; color: var(--text-muted); line-height: 1.4; }
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <!-- ============ LEFT SIDEBAR ============ -->
+  <aside class="sidebar">
+    <div class="sidebar-brand">NeuralChain<span style="color:var(--accent)">.</span></div>
+
+    <div class="sidebar-section">Workspace</div>
+    <a class="nav-item active" href="dashboard.html"><span class="ico">⌂</span> Home</a>
+    <a class="nav-item" href="assistant.html"><span class="ico">✦</span> Assistant</a>
+    <a class="nav-item" href="workflows.html"><span class="ico">⟳</span> Agents</a>
+
+    <div class="sidebar-section">Modules</div>    <a class="nav-item" href="research.html"><span class="ico">◊</span> Research</a>
+    <a class="nav-item" href="diligence.html"><span class="ico">⊞</span> Diligence</a>    <a class="nav-item" href="review.html"><span class="ico">▤</span> Review</a>
+    <a class="nav-item" href="playbooks.html"><span class="ico">❏</span> Playbooks</a>
+    <a class="nav-item" href="draft.html"><span class="ico">✎</span> Draft</a>
+
+    <div class="sidebar-section">Admin</div>
+    <a class="nav-item" href="#"><span class="ico">⚿</span> Security</a>
+    <a class="nav-item" href="settings.html"><span class="ico">⚙</span> Settings</a>
+
+    <div class="sidebar-footer">
+      <div style="color:var(--text-muted);">Acme Legal · prod</div>
+      <div>Deployed in your VPC</div>
+    </div>
+  </aside>
+
+  <!-- ============ MAIN ============ -->
+  <main class="main">
+
+    <div class="page-head">
+      <div>
+        <div style="font-size: 11px; letter-spacing: 0.12em; color: var(--accent); text-transform: uppercase; margin-bottom: 8px;">Acme Legal · workspace overview · all activity in-VPC</div>
+        <h1 class="page-title">Good morning, Sarah.</h1>
+        <p class="page-sub">Everything your AI workforce and your team did across the platform — last 7 days.</p>
+      </div>
+      <div class="page-actions" style="align-items:center; gap:12px;">
+        <div class="range">
+          <button>24h</button>
+          <button class="active">7d</button>
+          <button>30d</button>
+          <button>90d</button>
+        </div>
+        <button class="btn btn-primary">Ask Research</button>
+      </div>
+    </div>
+
+    <!-- AI ASK HERO -->
+    <div class="ask-hero">
+      <div class="ask-hero-label">✦ Ask your AI · grounded in your corpus · in-VPC</div>
+      <div class="ask-box">
+        <span class="ask-ico">✦</span>
+        <input placeholder="Ask anything about your contracts, matters, or portfolio — or describe a task to run…" />
+        <button class="btn btn-primary">Ask</button>
+      </div>
+      <div class="ask-suggest">
+        <span>Try:</span>
+        <button class="ask-chip">Summarize the Apollo MSA renewal risk</button>
+        <button class="ask-chip">Which active deals breach our LoL policy?</button>
+        <button class="ask-chip">Draft an NDA in our house style</button>
+        <a href="assistant.html" class="ask-open">Open full Assistant →</a>
+      </div>
+    </div>
+
+    <!-- CAPABILITY TILES -->
+    <div class="section-label">What your AI can do</div>
+    <div class="caps">
+      <a class="cap" href="assistant.html">
+        <div class="cap-ico">✦</div>
+        <div class="cap-name">Discuss</div>
+        <div class="cap-desc">Multi-turn chat with your AI co-counsel. Cites your documents.</div>
+      </a>
+      <a class="cap" href="research.html">
+        <div class="cap-ico">◊</div>
+        <div class="cap-name">Research</div>
+        <div class="cap-desc">Deep, pin-cited answers across your whole corpus.</div>
+      </a>
+      <a class="cap" href="diligence.html">
+        <div class="cap-ico">⊞</div>
+        <div class="cap-name">Extract</div>
+        <div class="cap-desc">Pull structured data across thousands of docs at once.</div>
+      </a>
+      <a class="cap" href="workflows.html">
+        <div class="cap-ico">⚙</div>
+        <div class="cap-name">Automate</div>
+        <div class="cap-desc">Agents that monitor your portfolio 24/7 in your VPC.</div>
+      </a>
+      <a class="cap" href="review.html">
+        <div class="cap-ico">✎</div>
+        <div class="cap-name">Review &amp; Draft</div>
+        <div class="cap-desc">Clause review with severity, drafting in your firm's voice.</div>
+      </a>
+    </div>
+
+    <!-- KPI STRIP -->
+    <div class="kpis">
+      <div class="kpi">
+        <div class="kpi-num">312</div>
+        <div class="kpi-lbl">AI tasks run · all modules</div>
+        <div class="kpi-delta up">▲ 18% vs. prior 7d</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-num">86</div>
+        <div class="kpi-lbl">Questions answered · Research</div>
+        <div class="kpi-delta up">▲ 22% vs. prior 7d</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-num">48</div>
+        <div class="kpi-lbl">Agent runs · Agents</div>
+        <div class="kpi-delta flat">7 agents active · 0 failed</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-num" style="color:#f4c47a">11</div>
+        <div class="kpi-lbl">Items need your attention</div>
+        <div class="kpi-delta warn">2 approvals overdue</div>
+      </div>
+    </div>
+
+    <!-- ATTENTION REQUIRED -->
+    <div class="section-label">Needs your attention</div>
+    <div class="attention">
+      <a class="att-item high" href="workflows.html">
+        <div class="att-count">2</div>
+        <div class="att-text">Approvals pending — agent actions awaiting sign-off</div>
+        <div class="att-src">Agents · oldest 2 days</div>
+      </a>
+      <a class="att-item med" href="workflows.html">
+        <div class="att-count">14</div>
+        <div class="att-text">Contracts auto-renewing in next 60 days</div>
+        <div class="att-src">Auto-Renewal Watch</div>
+      </a>
+      <a class="att-item med" href="diligence.html">
+        <div class="att-count">4</div>
+        <div class="att-text">Deals drifting from firm norm on indemnity / LoL</div>
+        <div class="att-src">Portfolio Drift Monitor</div>
+      </a>
+      <a class="att-item low" href="research.html">
+        <div class="att-count">5</div>
+        <div class="att-text">Contracts escalated to attorney review</div>
+        <div class="att-src">Contract Triage</div>
+      </a>
+    </div>
+
+    <!-- BODY: modules + feed -->
+    <div class="dash-body">
+
+      <!-- LEFT: module summaries -->
+      <div>
+        <div class="section-label">Activity · last 7 days</div>
+        <div class="mod-grid">
+
+          <!-- Research -->
+          <a class="mod" href="research.html">
+            <div class="mod-head">
+              <div class="mod-icon">◊</div>
+              <div>
+                <div class="mod-name">Research</div>
+                <div class="mod-tier">Corpus Q&amp;A</div>
+              </div>
+              <span class="mod-open">Open →</span>
+            </div>
+            <div class="mod-metric">86 <small>questions answered</small></div>
+            <div class="mod-line">avg 4.2s · 9 saved to dashboard · top topic: indemnity caps</div>
+            <div class="spark">
+              <span style="height:30%"></span><span style="height:45%"></span><span style="height:60%"></span>
+              <span style="height:48%"></span><span class="peak" style="height:100%"></span><span style="height:72%"></span>
+              <span style="height:55%"></span>
+            </div>
+          </a>
+
+          <!-- Diligence -->
+          <a class="mod" href="diligence.html">
+            <div class="mod-head">
+              <div class="mod-icon">⊞</div>
+              <div>
+                <div class="mod-name">Diligence</div>
+                <div class="mod-tier">Bulk extraction</div>
+              </div>
+              <span class="mod-open">Open →</span>
+            </div>
+            <div class="mod-metric">3 <small>grids run</small></div>
+            <div class="mod-line">11,200 cells extracted · 2 exported to CSV · 1 grid in progress (73%)</div>
+            <div class="spark">
+              <span style="height:20%"></span><span style="height:20%"></span><span class="peak" style="height:100%"></span>
+              <span style="height:30%"></span><span style="height:25%"></span><span style="height:80%"></span>
+              <span style="height:45%"></span>
+            </div>
+          </a>
+
+          <!-- Workflows -->
+          <a class="mod" href="workflows.html">
+            <div class="mod-head">
+              <div class="mod-icon">⟳</div>
+              <div>
+                <div class="mod-name">Agents</div>
+                <div class="mod-tier">Scheduled · NeuralChain wedge</div>
+              </div>
+              <span class="mod-open">Open →</span>
+            </div>
+            <div class="mod-metric">48 <small>agent runs</small></div>
+            <div class="mod-line">7 agents active · 18 items flagged · 2 awaiting approval</div>
+            <div class="spark">
+              <span style="height:55%"></span><span style="height:60%"></span><span style="height:58%"></span>
+              <span style="height:65%"></span><span style="height:62%"></span><span class="peak" style="height:100%"></span>
+              <span style="height:60%"></span>
+            </div>
+          </a>
+
+          <!-- Review (idle / tier 2) -->
+          <a class="mod" href="review.html">
+            <div class="mod-head">
+              <div class="mod-icon">▤</div>
+              <div>
+                <div class="mod-name">Review</div>
+                <div class="mod-tier">Clause review · playbook</div>
+              </div>
+              <span class="mod-open">Open →</span>
+            </div>
+            <div class="mod-metric">32 <small>docs reviewed</small></div>
+            <div class="mod-line">71 findings · 12 high-severity · playbook: Acme MSA v3</div>
+            <div class="spark">
+              <span style="height:40%"></span><span style="height:30%"></span><span style="height:50%"></span>
+              <span class="peak" style="height:90%"></span><span style="height:35%"></span><span style="height:45%"></span>
+              <span style="height:25%"></span>
+            </div>
+          </a>
+
+          <!-- Draft (idle / tier 2) -->
+          <a class="mod" href="draft.html">
+            <div class="mod-head">
+              <div class="mod-icon">✎</div>
+              <div>
+                <div class="mod-name">Draft</div>
+                <div class="mod-tier">Clause generation · your voice</div>
+              </div>
+              <span class="mod-open">Open →</span>
+            </div>
+            <div class="mod-metric">19 <small>clauses drafted</small></div>
+            <div class="mod-line">in firm voice · 6 inserted into live docs · 4 templates saved</div>
+            <div class="spark">
+              <span style="height:25%"></span><span style="height:40%"></span><span style="height:30%"></span>
+              <span style="height:55%"></span><span class="peak" style="height:80%"></span><span style="height:35%"></span>
+              <span style="height:20%"></span>
+            </div>
+          </a>
+
+        </div>
+      </div>
+
+      <!-- RIGHT: activity feed -->
+      <div class="feed">
+        <div class="feed-head">
+          <h3>Activity</h3>
+          <span class="all">View all →</span>
+        </div>
+
+        <div class="ev">
+          <div class="ev-rail"><div class="ev-dot workflows"></div></div>
+          <div class="ev-body">
+            <div class="ev-text"><b>Auto-Renewal Watch</b> flagged 14 contracts renewing in next 60 days and drafted renegotiation memos.</div>
+            <div class="ev-meta"><span class="ev-mod">Agents</span> · 2h ago</div>
+          </div>
+        </div>
+
+        <div class="ev">
+          <div class="ev-rail"><div class="ev-dot vault"></div></div>
+          <div class="ev-body">
+            <div class="ev-text">Sarah asked <b>"median indemnity cap across SaaS MSAs"</b> — 6 sources cited, saved to dashboard.</div>
+            <div class="ev-meta"><span class="ev-mod">Research</span> · 4h ago</div>
+          </div>
+        </div>
+
+        <div class="ev">
+          <div class="ev-rail"><div class="ev-dot connect"></div></div>
+          <div class="ev-body">
+            <div class="ev-text"><b>iManage</b> sync completed — 312 new documents indexed and ACL-mapped.</div>
+            <div class="ev-meta"><span class="ev-mod">Indexing · Settings</span> · 8h ago</div>
+          </div>
+        </div>
+
+        <div class="ev">
+          <div class="ev-rail"><div class="ev-dot workflows"></div></div>
+          <div class="ev-body">
+            <div class="ev-text"><b>2 agent actions</b> are awaiting your approval before sending external emails.</div>
+            <div class="ev-meta"><span class="ev-mod">Agents · approval gate</span> · 1 day ago</div>
+          </div>
+        </div>
+
+        <div class="ev">
+          <div class="ev-rail"><div class="ev-dot matrix"></div></div>
+          <div class="ev-body">
+            <div class="ev-text"><b>Project Atlas dataroom</b> grid finished — 11,200 cells extracted across 187 docs, exported to CSV.</div>
+            <div class="ev-meta"><span class="ev-mod">Diligence</span> · 1 day ago</div>
+          </div>
+        </div>
+
+        <div class="ev">
+          <div class="ev-rail"><div class="ev-dot workflows"></div></div>
+          <div class="ev-body">
+            <div class="ev-text"><b>Portfolio Drift Monitor</b> flagged 4 deals drifting from firm norm on LoL caps.</div>
+            <div class="ev-meta"><span class="ev-mod">Agents</span> · 3 days ago</div>
+          </div>
+        </div>
+
+        <div class="ev">
+          <div class="ev-rail"><div class="ev-dot review"></div></div>
+          <div class="ev-body">
+            <div class="ev-text"><b>Contract Triage</b> escalated 5 of 23 incoming contracts to attorney review.</div>
+            <div class="ev-meta"><span class="ev-mod">Agents → Review</span> · 4 days ago</div>
+          </div>
+        </div>
+
+        <div class="health" style="flex-direction:column; align-items:flex-start; gap:8px;">
+          <span class="chip chip-active"><span class="chip-dot"></span>All systems healthy · Onyx + Paperclip · in your VPC</span>
+          <span style="color:var(--text-faint)">12,847 docs indexed · 14 sources syncing · <a href="settings.html" style="color:var(--text-muted)">manage in Settings →</a></span>
+        </div>
+      </div>
+
+    </div>
+
+  </main>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,210 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>NeuralChain — Private AI Workforce</title>
+<link rel="stylesheet" href="_shared.css">
+<style>
+  .hero { padding: 96px 48px 48px; max-width: 1400px; margin: 0 auto; }
+  .eyebrow { font-size: 12px; letter-spacing: 0.16em; color: var(--accent); text-transform: uppercase; margin-bottom: 20px; }
+  .hero h1 { font-family: var(--serif); font-size: 80px; line-height: 0.98; letter-spacing: -0.02em; max-width: 900px; margin-bottom: 24px; }
+  .hero p.sub { font-size: 18px; color: var(--text-muted); max-width: 620px; margin-bottom: 36px; line-height: 1.55; }
+  .hero-cta { display: flex; gap: 12px; margin-bottom: 80px; }
+  .hero-cta .btn-primary { padding: 14px 24px; font-size: 14px; }
+  .hero-cta .btn { padding: 14px 24px; font-size: 14px; }
+
+  .logo-strip { padding: 24px 48px; border-block: 1px solid var(--border); display: flex; align-items: center; gap: 48px; max-width: 1400px; margin: 0 auto; font-size: 12px; color: var(--text-faint); }
+  .logo-strip .label { color: var(--text-muted); letter-spacing: 0.08em; text-transform: uppercase; }
+  .logo-strip .placeholder { padding: 6px 16px; border: 1px dashed var(--border-emph); border-radius: 2px; color: var(--text-faint); font-family: var(--serif); font-style: italic; }
+
+  .arch { padding: 96px 48px; max-width: 1400px; margin: 0 auto; }
+  .arch-title { font-family: var(--serif); font-size: 44px; line-height: 1.05; letter-spacing: -0.01em; max-width: 720px; margin-bottom: 16px; }
+  .arch-sub { color: var(--text-muted); max-width: 600px; margin-bottom: 48px; font-size: 16px; }
+  .arch-diagram { background: var(--bg-elev); border: 1px solid var(--border); border-radius: 8px; padding: 48px; display: flex; flex-direction: column; gap: 16px; align-items: center; position: relative; }
+  .arch-vpc { position: absolute; top: 12px; left: 16px; font-size: 11px; color: var(--accent); letter-spacing: 0.1em; text-transform: uppercase; }
+  .arch-no-data { position: absolute; bottom: 12px; right: 16px; font-size: 11px; color: var(--sev-high); letter-spacing: 0.08em; }
+  .arch-box { padding: 14px 22px; background: var(--bg); border: 1px solid var(--border-emph); border-radius: 4px; font-size: 13px; min-width: 280px; text-align: center; }
+  .arch-box.brand-row { background: var(--bg-panel); }
+  .arch-box .label { font-size: 10px; color: var(--text-faint); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 4px; }
+  .arch-box .name { font-family: var(--serif); font-size: 16px; }
+  .arch-box .sub { color: var(--text-muted); font-size: 11px; margin-top: 2px; }
+  .arch-row { display: flex; gap: 16px; }
+  .arch-arrow { color: var(--text-faint); font-size: 16px; }
+  .arch-row .arch-box { min-width: 200px; }
+
+  .modules { padding: 96px 48px; max-width: 1400px; margin: 0 auto; }
+  .modules-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 40px; }
+  .module-card { padding: 24px; background: var(--bg-elev); border: 1px solid var(--border); border-radius: 6px; min-height: 180px; display: flex; flex-direction: column; }
+  .module-card:hover { border-color: var(--accent); background: var(--bg-panel); }
+  .module-num { font-size: 11px; color: var(--text-faint); font-family: var(--serif); margin-bottom: 12px; }
+  .module-name { font-family: var(--serif); font-size: 22px; margin-bottom: 4px; }
+  .module-tier { font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); margin-bottom: 12px; }
+  .module-desc { color: var(--text-muted); font-size: 13px; flex: 1; }
+  .module-arrow { color: var(--text-muted); margin-top: 16px; font-size: 13px; }
+
+  .stats { padding: 96px 48px; max-width: 1400px; margin: 0 auto; display: grid; grid-template-columns: repeat(3, 1fr); gap: 48px; text-align: center; border-block: 1px solid var(--border); }
+  .stat-num { font-family: var(--serif); font-size: 56px; color: var(--accent); margin-bottom: 8px; line-height: 1; }
+  .stat-lbl { font-size: 13px; color: var(--text-muted); max-width: 220px; margin: 0 auto; }
+</style>
+</head>
+<body>
+
+<header class="top-nav">
+  <div class="brand">NeuralChain<span class="dot">.</span></div>
+  <nav class="top-nav-links">
+    <a href="#">Product</a>
+    <a href="#">Solutions</a>
+    <a href="#">Customers</a>
+    <a href="#">Security</a>
+    <a href="#">Resources</a>
+  </nav>
+  <div style="display:flex; gap: 12px; align-items: center;">
+    <a href="#" style="font-size:13px; color: var(--text-muted);">Sign In</a>
+    <a href="#" class="top-nav-cta">Talk to us</a>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="eyebrow">Private AI Workforce · Self-hosted · Built on Onyx + Paperclip</div>
+  <h1>Knowledge + agents. In your VPC.</h1>
+  <p class="sub">NeuralChain deploys a private AI platform inside your network. Onyx indexes your contracts and matter files. Paperclip runs scheduled agents over them. Your data never crosses your boundary.</p>
+  <div class="hero-cta">
+    <a href="#" class="btn-primary">See the architecture</a>
+    <a href="#" class="btn">Talk to us</a>
+  </div>
+</section>
+
+<section class="logo-strip">
+  <span class="label">Designed for</span>
+  <span class="placeholder">In-house Legal</span>
+  <span class="placeholder">M&amp;A Diligence</span>
+  <span class="placeholder">BigLaw</span>
+  <span class="placeholder">Procurement</span>
+  <span class="placeholder">Mid-Market Firms</span>
+</section>
+
+<section class="arch">
+  <div class="eyebrow" style="color: var(--text-faint);">Architecture</div>
+  <h2 class="arch-title">Two open-source substrates. One private deployment.</h2>
+  <p class="arch-sub">Onyx (corpus + retrieval) and Paperclip (agents + governance) run side-by-side in your VPC. Both MIT-licensed. Both self-hosted. NeuralChain integrates them, brands the UI, and connects them to your existing stack.</p>
+
+  <div class="arch-diagram">
+    <span class="arch-vpc">▸ Your VPC</span>
+    <span class="arch-no-data">× No data leaves this boundary</span>
+
+    <div class="arch-box brand-row">
+      <div class="label">Surface</div>
+      <div class="name">NeuralChain UI</div>
+      <div class="sub">branded for your firm</div>
+    </div>
+    <div class="arch-arrow">↓</div>
+    <div class="arch-row">
+      <div class="arch-box">
+        <div class="label">Knowledge substrate</div>
+        <div class="name">Onyx</div>
+        <div class="sub">RAG · 50+ connectors · ACLs</div>
+      </div>
+      <div class="arch-box">
+        <div class="label">Agent substrate</div>
+        <div class="name">Paperclip</div>
+        <div class="sub">scheduling · governance · audit</div>
+      </div>
+    </div>
+    <div class="arch-arrow">↓</div>
+    <div class="arch-box">
+      <div class="label">LLM gateway</div>
+      <div class="name">LiteLLM</div>
+      <div class="sub">Local Ollama · BYO Bedrock · Claude</div>
+    </div>
+    <div class="arch-arrow">↓</div>
+    <div class="arch-box">
+      <div class="label">Your systems</div>
+      <div class="name">DMS · CLM · Drive</div>
+      <div class="sub">iManage · NetDocs · SharePoint · S3</div>
+    </div>
+  </div>
+</section>
+
+<section class="modules">
+  <div class="eyebrow" style="color: var(--text-faint);">Six modules · one platform</div>
+  <h2 class="arch-title">Everything you'd expect from LegalOn, Spellbook, Harvey — running in your network.</h2>
+  <div class="modules-grid">
+
+    <a class="module-card" href="connect.html">
+      <div class="module-num">01</div>
+      <div class="module-name">Connect</div>
+      <div class="module-tier">Tier 1 USP</div>
+      <div class="module-desc">Ingest from your DMS, CLM, drives, and email. 50+ Onyx connectors plus NeuralChain legal-SaaS integrations.</div>
+      <div class="module-arrow">→</div>
+    </a>
+
+    <a class="module-card" href="research.html">
+      <div class="module-num">02</div>
+      <div class="module-name">Research</div>
+      <div class="module-tier">Tier 1 USP</div>
+      <div class="module-desc">Ask questions of your entire contract corpus. Pin-cited answers. Source viewer with highlighted spans.</div>
+      <div class="module-arrow">→</div>
+    </a>
+
+    <a class="module-card" href="diligence.html">
+      <div class="module-num">03</div>
+      <div class="module-name">Diligence</div>
+      <div class="module-tier">Tier 1 USP</div>
+      <div class="module-desc">Run extractions across thousands of documents. Rows × prompts grid. Export to CSV.</div>
+      <div class="module-arrow">→</div>
+    </a>
+
+    <a class="module-card" href="workflows.html">
+      <div class="module-num">04</div>
+      <div class="module-name">Workflows</div>
+      <div class="module-tier">Tier 1 USP · NeuralChain wedge</div>
+      <div class="module-desc">Scheduled agents that run 24/7 inside your VPC. Auto-renewal watch, portfolio drift, drift monitor. Powered by Paperclip.</div>
+      <div class="module-arrow">→</div>
+    </a>
+
+    <a class="module-card" href="#" style="opacity: 0.7;">
+      <div class="module-num">05</div>
+      <div class="module-name">Review</div>
+      <div class="module-tier" style="color: var(--text-muted);">Tier 2</div>
+      <div class="module-desc">Single-document clause review with severity-ranked findings. Playbook-driven. Same pattern as LegalOn.</div>
+      <div class="module-arrow">→</div>
+    </a>
+
+    <a class="module-card" href="#" style="opacity: 0.7;">
+      <div class="module-num">06</div>
+      <div class="module-name">Draft</div>
+      <div class="module-tier" style="color: var(--text-muted);">Tier 2</div>
+      <div class="module-desc">Generate clauses in your firm's voice using your corpus as style reference.</div>
+      <div class="module-arrow">→</div>
+    </a>
+
+  </div>
+</section>
+
+<section class="stats">
+  <div>
+    <div class="stat-num">0</div>
+    <div class="stat-lbl">bytes of your data that ever leave your VPC</div>
+  </div>
+  <div>
+    <div class="stat-num">2</div>
+    <div class="stat-lbl">open-source substrates, both MIT-licensed</div>
+  </div>
+  <div>
+    <div class="stat-num">6-12 wks</div>
+    <div class="stat-lbl">typical engagement from kickoff to production</div>
+  </div>
+</section>
+
+<footer class="foot">
+  <div>© 2026 NeuralChain AI · Built on <span style="color:var(--text-muted)">Onyx + Paperclip</span></div>
+  <div class="foot-badges">
+    <span>SOC 2 Type II <span class="faint">(in progress)</span></span>
+    <span>GDPR-ready</span>
+    <span>MIT open core</span>
+    <span>Self-hosted</span>
+  </div>
+</footer>
+
+</body>
+</html>

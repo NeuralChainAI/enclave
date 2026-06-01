@@ -1,0 +1,98 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>NeuralChain — Wireframes Index</title>
+<link rel="stylesheet" href="_shared.css">
+<style>
+  body { padding: 64px; max-width: 900px; margin: 0 auto; }
+  h1 { font-family: var(--serif); font-size: 36px; margin-bottom: 8px; }
+  .lead { color: var(--text-muted); margin-bottom: 40px; max-width: 600px; }
+  .wires { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .wire {
+    border: 1px solid var(--border);
+    padding: 24px;
+    border-radius: 6px;
+    background: var(--bg-elev);
+  }
+  .wire:hover { border-color: var(--accent); background: var(--bg-panel); }
+  .wire h3 { font-family: var(--serif); font-size: 18px; margin-bottom: 4px; }
+  .wire p { color: var(--text-muted); font-size: 13px; margin-bottom: 8px; }
+  .wire .tag { display: inline-block; padding: 2px 8px; border-radius: 3px; font-size: 10px; background: var(--bg-panel); color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; }
+  .wire .tier1 { color: var(--accent); }
+  .meta { margin-top: 48px; padding: 24px; background: var(--bg-elev); border: 1px solid var(--border); border-radius: 6px; font-size: 13px; color: var(--text-muted); }
+  .meta strong { color: var(--text); }
+</style>
+</head>
+<body>
+
+<h1>NeuralChain — UI Wireframes <span style="color:var(--text-muted);font-size:18px">(low-fi, structure only)</span></h1>
+<p class="lead">Pages to validate IA + visual language before any production design. AI-forward in-app home, a conversational Assistant, the four Tier-1 modules, and admin. Charcoal + serif headlines + forest-green accent. Click any wire to preview.</p>
+
+<div class="wires">
+  <a class="wire" href="home.html">
+    <span class="tag">Marketing entry</span>
+    <h3>Home / Landing</h3>
+    <p>Hero, architecture diagram, the 6 modules as cards, customer logos, trust badges.</p>
+  </a>
+  <a class="wire" href="dashboard.html">
+    <span class="tag tier1">In-app home</span>
+    <h3>Dashboard — Workspace overview</h3>
+    <p>AI-forward home: "Ask your AI" box, capability tiles, KPI strip, "needs attention" band, per-module summaries (7/30/90d), activity feed.</p>
+  </a>
+  <a class="wire" href="assistant.html">
+    <span class="tag tier1">Discuss with AI</span>
+    <h3>Assistant — conversational AI</h3>
+    <p>Multi-turn chat with your AI co-counsel. Corpus-grounded, pin-cited, with hand-offs to Diligence, Agents, and Draft.</p>
+  </a>
+  <a class="wire" href="workflows.html">
+    <span class="tag tier1">First-class · Tier 1</span>
+    <h3>Agents — your AI workforce</h3>
+    <p>Promoted to Workspace (Home · Assistant · Agents). Active runs + library of 12 agents (3 active, 9 templates) + Create Custom Agent. Paperclip-powered.</p>
+  </a>
+  <a class="wire" href="research.html">
+    <span class="tag tier1">Tier 1 USP</span>
+    <h3>Research — Q&amp;A across corpus</h3>
+    <p>Ask questions of the firm's whole contract corpus. Pin-cited answers with source viewer. Onyx-powered.</p>
+  </a>
+  <a class="wire" href="diligence.html">
+    <span class="tag tier1">Tier 1 USP</span>
+    <h3>Diligence — Multi-doc grid</h3>
+    <p>Rows = documents, columns = extraction prompts. Spreadsheet-style grid. Real-time cell fill.</p>
+  </a>
+  <a class="wire" href="settings.html">
+    <span class="tag">Admin</span>
+    <h3>Settings — Connectors &amp; Indexing</h3>
+    <p>Connect now lives here. Live ingestion feed, per-source sync status, connector catalog. The "see all ongoing indexing" surface.</p>
+  </a>
+  <a class="wire" href="review.html">
+    <span class="tag tier1">Module</span>
+    <h3>Review — clause check vs. playbook</h3>
+    <p>Single-document review. Clause cards scored by severity, with redlines grounded in your firm's playbook.</p>
+  </a>
+  <a class="wire" href="playbooks.html">
+    <span class="tag tier1">Firm standards</span>
+    <h3>Playbooks — author &amp; edit rules</h3>
+    <p>Where the playbook lives. Rules with preferred/acceptable/fallback positions, severity, escalation — generated from your corpus. Consumed by Review, Assistant, Agents.</p>
+  </a>
+  <a class="wire" href="draft.html">
+    <span class="tag tier1">Module</span>
+    <h3>Draft — AI drafting in your voice</h3>
+    <p>Generate contracts and clauses from your executed precedents. Editor canvas, precedent rail, clause library.</p>
+  </a>
+</div>
+
+<div class="meta">
+  <strong>Design tokens locked here:</strong><br>
+  Background <code class="mono">#0a0a0a</code> &nbsp;·&nbsp;
+  Accent <code class="mono">#1a7a52</code> (forest green) &nbsp;·&nbsp;
+  Severity High <code class="mono">#c53030</code> &nbsp;·&nbsp;
+  Headlines serif &nbsp;·&nbsp;
+  Body system sans &nbsp;·&nbsp;
+  Single accent (no gradient) &nbsp;·&nbsp;
+  All caps reserved for section labels<br><br>
+  <strong>What's not in these wireframes:</strong> production microcopy, real customer logos, actual product screenshots inside cards, animation specs, dark/light toggle, mobile breakpoints. Wireframes show <em>structure and hierarchy</em>, not final pixels.
+</div>
+
+</body>
+</html>

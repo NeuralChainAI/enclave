@@ -1,0 +1,338 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Agents — NeuralChain</title>
+<link rel="stylesheet" href="_shared.css">
+<style>
+  .runs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 40px; }
+  .run { padding: 16px; background: var(--bg-elev); border: 1px solid var(--border); border-radius: 6px; }
+  .run-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+  .run-name { font-family: var(--serif); font-size: 16px; }
+  .run-meta { font-size: 12px; color: var(--text-muted); margin-bottom: 4px; }
+  .run-next { font-size: 11px; color: var(--accent); }
+
+  .tabs { display: flex; gap: 4px; margin-bottom: 24px; border-bottom: 1px solid var(--border); }
+  .tab { padding: 10px 14px; font-size: 13px; color: var(--text-muted); border-bottom: 2px solid transparent; margin-bottom: -1px; }
+  .tab.active { color: var(--text); border-bottom-color: var(--accent); }
+  .tab-count { font-size: 11px; color: var(--text-faint); margin-left: 4px; }
+
+  .filter-row { display: flex; gap: 8px; margin-bottom: 20px; }
+  .filter { padding: 4px 10px; background: var(--bg-elev); border: 1px solid var(--border-emph); border-radius: 999px; font-size: 12px; color: var(--text-muted); }
+  .filter.active { background: var(--bg-panel); color: var(--text); border-color: var(--text-muted); }
+
+  .agent-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .agent {
+    padding: 20px;
+    background: var(--bg-elev);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    min-height: 200px;
+    display: flex;
+    flex-direction: column;
+    cursor: pointer;
+  }
+  .agent.featured { border-color: var(--accent-soft); background: var(--bg-panel); position: relative; }
+  .agent.featured::before { content: "FEATURED"; position: absolute; top: 16px; right: 16px; font-size: 9px; letter-spacing: 0.1em; color: var(--accent); }
+  .agent:hover { border-color: var(--border-emph); }
+  .agent-head { display: flex; gap: 10px; align-items: flex-start; margin-bottom: 12px; }
+  .agent-icon { width: 32px; height: 32px; border-radius: 4px; background: var(--bg); border: 1px solid var(--border-emph); display: flex; align-items: center; justify-content: center; font-family: var(--serif); font-size: 14px; color: var(--text-muted); }
+  .agent.featured .agent-icon { background: var(--accent-soft); color: var(--text); border-color: var(--accent); }
+  .agent-name { font-family: var(--serif); font-size: 17px; line-height: 1.2; }
+  .agent-cat { font-size: 11px; color: var(--text-faint); letter-spacing: 0.04em; margin-top: 2px; }
+  .agent-desc { font-size: 13px; color: var(--text-muted); flex: 1; }
+  .agent-foot { display: flex; gap: 6px; margin-top: 12px; }
+
+  .create-row {
+    margin-top: 32px;
+    padding: 32px;
+    background: var(--bg-elev);
+    border: 1px dashed var(--border-emph);
+    border-radius: 6px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .create-row-content { max-width: 520px; }
+  .create-row h3 { font-family: var(--serif); font-size: 22px; margin-bottom: 4px; }
+  .create-row p { color: var(--text-muted); font-size: 13px; }
+
+  .pwd-by { margin-top: 40px; padding: 16px 20px; background: var(--bg-elev); border: 1px solid var(--border); border-radius: 6px; font-size: 12px; color: var(--text-muted); display: flex; gap: 16px; align-items: center; }
+  .pwd-by strong { color: var(--text); font-family: var(--serif); font-weight: normal; font-size: 14px; }
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <!-- ============ LEFT SIDEBAR ============ -->
+  <aside class="sidebar">
+    <div class="sidebar-brand">NeuralChain<span style="color:var(--accent)">.</span></div>
+
+    <div class="sidebar-section">Workspace</div>
+    <a class="nav-item" href="dashboard.html"><span class="ico">⌂</span> Home</a>
+    <a class="nav-item" href="assistant.html"><span class="ico">✦</span> Assistant</a>
+    <a class="nav-item active" href="workflows.html"><span class="ico">⟳</span> Agents</a>
+
+    <div class="sidebar-section">Modules</div>    <a class="nav-item" href="research.html"><span class="ico">◊</span> Research</a>
+    <a class="nav-item" href="diligence.html"><span class="ico">⊞</span> Diligence</a>    <a class="nav-item" href="review.html"><span class="ico">▤</span> Review</a>
+    <a class="nav-item" href="playbooks.html"><span class="ico">❏</span> Playbooks</a>
+    <a class="nav-item" href="draft.html"><span class="ico">✎</span> Draft</a>
+
+    <div class="sidebar-section">Admin</div>
+    <a class="nav-item" href="#"><span class="ico">⚿</span> Security</a>
+    <a class="nav-item" href="settings.html"><span class="ico">⚙</span> Settings</a>
+
+    <div class="sidebar-footer">
+      <div style="color:var(--text-muted);">Acme Legal · prod</div>
+      <div>Deployed in your VPC</div>
+    </div>
+  </aside>
+
+  <!-- ============ MAIN ============ -->
+  <main class="main">
+
+    <div class="page-head">
+      <div>
+        <div style="font-size: 11px; letter-spacing: 0.12em; color: var(--accent); text-transform: uppercase; margin-bottom: 8px;">Powered by Paperclip · scheduled · governed · audit-logged</div>
+        <h1 class="page-title">Your AI workforce, running 24/7 in your VPC.</h1>
+        <p class="page-sub">Pre-built agents that monitor your contract corpus continuously, plus on-demand recipes for triage, dataroom review, and drafting. Every agent action logged, every budget controlled, every approval gate configurable.</p>
+      </div>
+      <div class="page-actions">
+        <button class="btn">View runs</button>
+        <button class="btn btn-primary">+ Create Agent</button>
+      </div>
+    </div>
+
+    <!-- Active Runs -->
+    <div style="font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-faint); margin-bottom: 12px;">Active runs · last 24h</div>
+    <div class="runs">
+      <div class="run">
+        <div class="run-head">
+          <div class="run-name">Auto-Renewal Watch</div>
+          <span class="chip chip-active"><span class="chip-dot"></span>Running</span>
+        </div>
+        <div class="run-meta">Last tick: 2h ago · 14 contracts flagged for renewal in next 60d</div>
+        <div class="run-next">Next tick: tomorrow 06:00 UTC</div>
+      </div>
+      <div class="run">
+        <div class="run-head">
+          <div class="run-name">Portfolio Drift Monitor</div>
+          <span class="chip chip-active"><span class="chip-dot"></span>Running</span>
+        </div>
+        <div class="run-meta">Last tick: 3 days ago · 4 deals flagged drifting from firm norm</div>
+        <div class="run-next">Next tick: next Monday</div>
+      </div>
+      <div class="run">
+        <div class="run-head">
+          <div class="run-name">Contract Triage</div>
+          <span class="chip"><span class="chip-dot" style="background:var(--text-muted)"></span>Idle</span>
+        </div>
+        <div class="run-meta">Last run: yesterday · 23 contracts triaged · 5 escalated</div>
+        <div class="run-next">Triggered on upload</div>
+      </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tabs">
+      <a class="tab active">Library<span class="tab-count">(12)</span></a>
+      <a class="tab">Runs<span class="tab-count">(48)</span></a>
+      <a class="tab">Approvals<span class="tab-count">(2)</span></a>
+      <a class="tab">Audit Log</a>
+      <a class="tab">Budgets</a>
+    </div>
+
+    <!-- Category filters -->
+    <div class="filter-row">
+      <span class="filter active">All</span>
+      <span class="filter">Continuous (scheduled)</span>
+      <span class="filter">Recipe (on-demand)</span>
+      <span class="filter">M&amp;A</span>
+      <span class="filter">CLM</span>
+      <span class="filter">Litigation</span>
+    </div>
+
+    <!-- ============ AGENT GRID ============ -->
+    <div class="agent-grid">
+
+      <!-- ACTIVE 1: Auto-Renewal Watch -->
+      <div class="agent featured">
+        <div class="agent-head">
+          <div class="agent-icon">⟳</div>
+          <div>
+            <div class="agent-name">Auto-Renewal Watch</div>
+            <div class="agent-cat">Continuous · NeuralChain-unique</div>
+          </div>
+        </div>
+        <div class="agent-desc">Daily scan of executed contracts. Flag any renewing in next 60 days. Draft renegotiation memo per flagged contract. Email digest to GC.</div>
+        <div class="agent-foot">
+          <span class="chip chip-active"><span class="chip-dot"></span>Active</span>
+          <span class="chip">Cron · daily 06:00</span>
+        </div>
+      </div>
+
+      <!-- ACTIVE 2: Triage -->
+      <div class="agent featured">
+        <div class="agent-head">
+          <div class="agent-icon">⤳</div>
+          <div>
+            <div class="agent-name">Contract Triage</div>
+            <div class="agent-cat">Recipe · event-driven</div>
+          </div>
+        </div>
+        <div class="agent-desc">When a contract lands in inbox/DMS, run risk playbook. Route low-risk to fast-track queue, escalate exceptions to attorney review.</div>
+        <div class="agent-foot">
+          <span class="chip chip-active"><span class="chip-dot"></span>Active</span>
+          <span class="chip">Webhook trigger</span>
+        </div>
+      </div>
+
+      <!-- ACTIVE 3: Drift Monitor -->
+      <div class="agent featured">
+        <div class="agent-head">
+          <div class="agent-icon">≈</div>
+          <div>
+            <div class="agent-name">Portfolio Drift Monitor</div>
+            <div class="agent-cat">Continuous · NeuralChain-unique</div>
+          </div>
+        </div>
+        <div class="agent-desc">Weekly compare of new deals vs. firm's historical positions. Flag policy drift on indemnity, LoL, governing law. Exception report to GC.</div>
+        <div class="agent-foot">
+          <span class="chip chip-active"><span class="chip-dot"></span>Active</span>
+          <span class="chip">Cron · weekly</span>
+        </div>
+      </div>
+
+      <!-- TEMPLATES -->
+      <div class="agent">
+        <div class="agent-head">
+          <div class="agent-icon">⚐</div>
+          <div>
+            <div class="agent-name">Regulatory Pulse</div>
+            <div class="agent-cat">Continuous</div>
+          </div>
+        </div>
+        <div class="agent-desc">Monitor regulatory feeds. Cross-reference your contract exposure. Alert on impact.</div>
+        <div class="agent-foot"><span class="chip chip-tmpl">Template</span></div>
+      </div>
+
+      <div class="agent">
+        <div class="agent-head">
+          <div class="agent-icon">✉</div>
+          <div>
+            <div class="agent-name">Stakeholder Digest</div>
+            <div class="agent-cat">Continuous</div>
+          </div>
+        </div>
+        <div class="agent-desc">Weekly distillation of incoming contracts + risks for partners. Auto-email with attached summary deck.</div>
+        <div class="agent-foot"><span class="chip chip-tmpl">Template</span></div>
+      </div>
+
+      <div class="agent">
+        <div class="agent-head">
+          <div class="agent-icon">⊟</div>
+          <div>
+            <div class="agent-name">Dataroom Review</div>
+            <div class="agent-cat">Recipe · M&amp;A</div>
+          </div>
+        </div>
+        <div class="agent-desc">Run extraction grid across a target's dataroom. 50+ extraction prompts. Output to Excel for diligence memo.</div>
+        <div class="agent-foot"><span class="chip chip-tmpl">Template</span></div>
+      </div>
+
+      <div class="agent">
+        <div class="agent-head">
+          <div class="agent-icon">▦</div>
+          <div>
+            <div class="agent-name">Disclosure Schedule Builder</div>
+            <div class="agent-cat">Recipe · M&amp;A</div>
+          </div>
+        </div>
+        <div class="agent-desc">Generate disclosure schedules from prior deal book + current contracts. Output structured schedule.</div>
+        <div class="agent-foot"><span class="chip chip-tmpl">Template</span></div>
+      </div>
+
+      <div class="agent">
+        <div class="agent-head">
+          <div class="agent-icon">✎</div>
+          <div>
+            <div class="agent-name">Style-Aware Drafter</div>
+            <div class="agent-cat">Recipe</div>
+          </div>
+        </div>
+        <div class="agent-desc">Draft clauses using firm's writing voice from corpus. Specify clause type and AI generates in your style.</div>
+        <div class="agent-foot"><span class="chip chip-tmpl">Template</span></div>
+      </div>
+
+      <div class="agent">
+        <div class="agent-head">
+          <div class="agent-icon">⚖</div>
+          <div>
+            <div class="agent-name">Litigation Prep</div>
+            <div class="agent-cat">Recipe · Litigation</div>
+          </div>
+        </div>
+        <div class="agent-desc">Summarize complaints. Draft counter-arguments. Generate deposition prep questionnaire.</div>
+        <div class="agent-foot"><span class="chip chip-tmpl">Template</span></div>
+      </div>
+
+      <div class="agent">
+        <div class="agent-head">
+          <div class="agent-icon">⇄</div>
+          <div>
+            <div class="agent-name">Translation Round-trip</div>
+            <div class="agent-cat">Recipe</div>
+          </div>
+        </div>
+        <div class="agent-desc">Non-English contract → English review → redline → translate back to original. Preserves legal meaning.</div>
+        <div class="agent-foot"><span class="chip chip-tmpl">Template</span></div>
+      </div>
+
+      <div class="agent">
+        <div class="agent-head">
+          <div class="agent-icon">⊕</div>
+          <div>
+            <div class="agent-name">Intake Agent</div>
+            <div class="agent-cat">Recipe · event-driven</div>
+          </div>
+        </div>
+        <div class="agent-desc">Collect missing info from requestors before matter hits queue. Reduces back-and-forth, pre-qualifies intake.</div>
+        <div class="agent-foot"><span class="chip chip-tmpl">Template</span></div>
+      </div>
+
+      <div class="agent">
+        <div class="agent-head">
+          <div class="agent-icon">✓</div>
+          <div>
+            <div class="agent-name">Quarterly Portfolio Audit</div>
+            <div class="agent-cat">Continuous</div>
+          </div>
+        </div>
+        <div class="agent-desc">Run firm's playbook against every executed deal each quarter. Generate exception report to GC + audit log.</div>
+        <div class="agent-foot"><span class="chip chip-tmpl">Template</span></div>
+      </div>
+
+    </div>
+
+    <!-- Create -->
+    <div class="create-row">
+      <div class="create-row-content">
+        <h3>Need something else? Create a custom agent.</h3>
+        <p>Describe the workflow in plain English. NeuralChain configures triggers, retrieval, governance, and output. Or upload a Paperclip company template from your repo.</p>
+      </div>
+      <button class="btn btn-primary" style="padding: 14px 22px;">+ Create Custom Agent</button>
+    </div>
+
+    <!-- Powered by -->
+    <div class="pwd-by">
+      <strong>Paperclip</strong>
+      <span style="color:var(--text-faint)">·</span>
+      <span>Self-hosted orchestration · scheduled heartbeats · per-agent budget caps · immutable audit log · approval gates · multi-tenant isolation · MIT-licensed</span>
+    </div>
+
+  </main>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,261 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Acme MSA Playbook — NeuralChain</title>
+<link rel="stylesheet" href="_shared.css">
+<style>
+  .pb-summary { display:flex; justify-content:space-between; align-items:center; padding:14px 20px; background:var(--bg-elev); border:1px solid var(--border); border-radius:6px; margin-bottom:18px; font-size:12.5px; color:var(--text-muted); }
+  .pb-summary strong { color:var(--text); }
+  .pb-summary .left { display:flex; gap:20px; align-items:center; }
+
+  .edit-layout { display:grid; grid-template-columns: 280px 1fr; gap:24px; align-items:start; }
+
+  /* rule list */
+  .rule-list { background:var(--bg-elev); border:1px solid var(--border); border-radius:6px; overflow:hidden; position:sticky; top:24px; }
+  .rl-search { padding:10px 14px; border-bottom:1px solid var(--border); font-size:12px; color:var(--text-faint); }
+  .rl-group { font-size:10.5px; letter-spacing:0.07em; text-transform:uppercase; color:var(--text-faint); padding:14px 14px 6px; }
+  .rule-item { display:flex; align-items:center; gap:8px; padding:8px 14px; font-size:12.5px; color:var(--text-muted); cursor:pointer; border-left:2px solid transparent; }
+  .rule-item:hover { background:var(--bg-hover); color:var(--text); }
+  .rule-item.active { background:var(--bg-panel); color:var(--text); border-left-color:var(--accent); }
+  .sev-dot { width:7px; height:7px; border-radius:50%; flex-shrink:0; }
+  .sev-dot.high { background:var(--sev-high); } .sev-dot.med { background:var(--sev-med); } .sev-dot.low { background:var(--sev-low); }
+  .rule-id { font-family:ui-monospace,monospace; font-size:10.5px; color:var(--text-faint); margin-left:auto; }
+
+  /* rule detail */
+  .detail { display:flex; flex-direction:column; gap:0; }
+  .detail-head { display:flex; justify-content:space-between; align-items:flex-start; gap:16px; padding-bottom:16px; border-bottom:1px solid var(--border); margin-bottom:20px; }
+  .detail-id { font-family:ui-monospace,monospace; font-size:12px; color:var(--accent); margin-bottom:6px; }
+  .detail-name { font-family:var(--serif); font-size:24px; }
+  .detail-controls { display:flex; gap:8px; align-items:center; flex-shrink:0; }
+  .toggle { display:inline-flex; border:1px solid var(--border-emph); border-radius:999px; overflow:hidden; font-size:11px; }
+  .toggle span { padding:5px 11px; color:var(--text-muted); }
+  .toggle span.on { background:var(--bg-panel); color:var(--text); }
+
+  .field-label { font-size:11px; letter-spacing:0.06em; text-transform:uppercase; color:var(--text-faint); margin-bottom:8px; display:flex; align-items:center; gap:8px; }
+  .block { margin-bottom:24px; }
+  .trigger { padding:12px 14px; background:var(--bg); border:1px solid var(--border); border-radius:5px; font-size:13px; color:var(--text-muted); line-height:1.6; }
+  .trigger b { color:var(--text); font-weight:500; }
+
+  /* tiered positions */
+  .tier { border:1px solid var(--border); border-radius:6px; padding:14px 16px; margin-bottom:10px; }
+  .tier.preferred { border-left:3px solid var(--accent); }
+  .tier.acceptable { border-left:3px solid var(--text-subtle); }
+  .tier.fallback { border-left:3px solid var(--sev-med); }
+  .tier-head { display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; }
+  .tier-name { font-size:12px; font-weight:500; color:var(--text); display:flex; align-items:center; gap:8px; }
+  .tier-tag { font-size:10px; letter-spacing:0.05em; text-transform:uppercase; color:var(--text-faint); }
+  .tier-lang { font-family:var(--serif); font-size:13px; line-height:1.7; color:var(--text-muted); }
+  .tier-lang b { color:var(--text); font-weight:500; }
+  .tier-edit { font-size:11px; color:var(--accent); }
+
+  /* corpus grounding */
+  .ground-box { background:linear-gradient(180deg, rgba(26,122,82,0.08), var(--bg-elev) 80%); border:1px solid var(--accent-soft); border-radius:6px; padding:16px 18px; margin-bottom:24px; }
+  .ground-head { display:flex; align-items:center; gap:8px; font-size:12px; color:var(--accent); margin-bottom:8px; letter-spacing:0.03em; }
+  .ground-body { font-size:13px; color:var(--text-muted); line-height:1.65; }
+  .ground-body b { color:var(--text); font-weight:500; }
+  .ground-bar { height:6px; border-radius:3px; background:var(--bg); margin:12px 0 6px; overflow:hidden; }
+  .ground-bar i { display:block; height:100%; background:var(--accent); width:85%; }
+  .ground-actions { display:flex; gap:8px; margin-top:12px; }
+
+  .meta-row { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:24px; }
+  .meta-cell { padding:12px 14px; background:var(--bg-elev); border:1px solid var(--border); border-radius:5px; }
+  .meta-cell .k { font-size:11px; color:var(--text-faint); text-transform:uppercase; letter-spacing:0.05em; margin-bottom:6px; }
+  .meta-cell .v { font-size:13px; color:var(--text); }
+  .meta-cell .v .who { color:var(--accent); }
+
+  .guidance { padding:12px 14px; background:var(--bg-elev); border:1px solid var(--border); border-radius:5px; font-size:13px; color:var(--text-muted); line-height:1.65; }
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <aside class="sidebar">
+    <div class="sidebar-brand">NeuralChain<span style="color:var(--accent)">.</span></div>
+    <div class="sidebar-section">Workspace</div>
+    <a class="nav-item" href="dashboard.html"><span class="ico">⌂</span> Home</a>
+    <a class="nav-item" href="assistant.html"><span class="ico">✦</span> Assistant</a>
+    <a class="nav-item" href="workflows.html"><span class="ico">⟳</span> Agents</a>
+    <div class="sidebar-section">Modules</div>
+    <a class="nav-item" href="research.html"><span class="ico">◊</span> Research</a>
+    <a class="nav-item" href="diligence.html"><span class="ico">⊞</span> Diligence</a>
+    <a class="nav-item" href="review.html"><span class="ico">▤</span> Review</a>
+    <a class="nav-item active" href="playbooks.html"><span class="ico">❏</span> Playbooks</a>
+    <a class="nav-item" href="draft.html"><span class="ico">✎</span> Draft</a>
+    <div class="sidebar-section">Admin</div>
+    <a class="nav-item" href="#"><span class="ico">⚿</span> Security</a>
+    <a class="nav-item" href="settings.html"><span class="ico">⚙</span> Settings</a>
+    <div class="sidebar-footer">
+      <div style="color:var(--text-muted);">Acme Legal · prod</div>
+      <div>Deployed in your VPC</div>
+    </div>
+  </aside>
+
+  <main class="main">
+
+    <div class="page-head">
+      <div>
+        <div style="font-size: 11px; letter-spacing: 0.12em; color: var(--accent); text-transform: uppercase; margin-bottom: 8px;">
+          <a href="playbooks.html" style="color:var(--text-faint);">Playbooks</a> &nbsp;›&nbsp; Editing
+        </div>
+        <h1 class="page-title">Acme MSA Playbook</h1>
+        <p class="page-sub">Third-party / vendor master service agreements · 38 rules · last published v4 on 2026-05-12 by R. Mehta</p>
+      </div>
+      <div class="page-actions">
+        <button class="btn">Version history</button>
+        <button class="btn">Test on a contract</button>
+        <button class="btn btn-primary">Publish v5</button>
+      </div>
+    </div>
+
+    <div class="pb-summary">
+      <div class="left">
+        <span><strong>38</strong> rules</span>
+        <span>·</span>
+        <span><strong style="color:#ef9a9a;">2</strong> high · <strong style="color:#f4c47a;">9</strong> medium · <strong style="color:#82d5a3;">27</strong> low</span>
+        <span>·</span>
+        <span>Layered with <strong>NeuralChain Base MSA</strong> template</span>
+      </div>
+      <span style="color:var(--text-faint);">3 unpublished changes</span>
+    </div>
+
+    <div class="edit-layout">
+
+      <!-- LEFT: rule list -->
+      <div class="rule-list">
+        <div class="rl-search">Search 38 rules…</div>
+
+        <div class="rl-group">Liability &amp; risk</div>
+        <div class="rule-item active"><span class="sev-dot high"></span> Liability cap required <span class="rule-id">LoL-01</span></div>
+        <div class="rule-item"><span class="sev-dot high"></span> Consequential damages excluded <span class="rule-id">LoL-02</span></div>
+
+        <div class="rl-group">Indemnification</div>
+        <div class="rule-item"><span class="sev-dot high"></span> Mutual indemnity <span class="rule-id">IND-02</span></div>
+        <div class="rule-item"><span class="sev-dot med"></span> IP infringement indemnity <span class="rule-id">IND-03</span></div>
+
+        <div class="rl-group">Term &amp; renewal</div>
+        <div class="rule-item"><span class="sev-dot med"></span> Opt-out ≤ 30 days <span class="rule-id">REN-01</span></div>
+        <div class="rule-item"><span class="sev-dot med"></span> Termination for convenience <span class="rule-id">TRM-03</span></div>
+
+        <div class="rl-group">Governing law &amp; disputes</div>
+        <div class="rule-item"><span class="sev-dot med"></span> Delaware preferred <span class="rule-id">GOV-01</span></div>
+
+        <div class="rl-group">Boilerplate</div>
+        <div class="rule-item"><span class="sev-dot low"></span> Change-of-control consent <span class="rule-id">ASN-02</span></div>
+        <div class="rule-item"><span class="sev-dot low"></span> Email notice permitted <span class="rule-id">NOT-01</span></div>
+
+        <div style="padding:12px 14px; border-top:1px solid var(--border); font-size:12px; color:var(--accent);">+ Add rule</div>
+      </div>
+
+      <!-- RIGHT: rule detail -->
+      <div class="detail">
+
+        <div class="detail-head">
+          <div>
+            <div class="detail-id">LoL-01</div>
+            <div class="detail-name">Liability cap required</div>
+          </div>
+          <div class="detail-controls">
+            <span class="chip chip-high"><span class="chip-dot"></span>High severity</span>
+            <span class="toggle"><span class="on">Required</span><span>Negotiable</span></span>
+          </div>
+        </div>
+
+        <!-- Trigger -->
+        <div class="block">
+          <div class="field-label">When this clause appears</div>
+          <div class="trigger">
+            Triggers on <b>limitation of liability</b> / aggregate liability provisions. Flags when the clause is <b>missing</b>, <b>uncapped</b>, or caps liability <b>above 12 months' fees</b>.
+          </div>
+        </div>
+
+        <!-- Tiered positions -->
+        <div class="block">
+          <div class="field-label">Positions <span style="color:var(--text-subtle); text-transform:none; letter-spacing:0;">— preferred → fallback, in order of preference</span></div>
+
+          <div class="tier preferred">
+            <div class="tier-head">
+              <span class="tier-name"><span class="sev-dot" style="background:var(--accent)"></span> Preferred</span>
+              <span class="tier-edit">Edit</span>
+            </div>
+            <div class="tier-lang">
+              "…each party's total aggregate liability under this Agreement <b>shall not exceed the fees paid by Customer in the twelve (12) months</b> preceding the claim."
+            </div>
+          </div>
+
+          <div class="tier acceptable">
+            <div class="tier-head">
+              <span class="tier-name"><span class="sev-dot" style="background:var(--text-subtle)"></span> Acceptable</span>
+              <span class="tier-tag">no escalation needed</span>
+            </div>
+            <div class="tier-lang">
+              Cap at 12 months' fees with <b>mutual super-cap carve-outs</b> for confidentiality and IP breaches (up to 24 months).
+            </div>
+          </div>
+
+          <div class="tier fallback">
+            <div class="tier-head">
+              <span class="tier-name"><span class="sev-dot med"></span> Fallback</span>
+              <span class="tier-tag">requires GC sign-off beyond this</span>
+            </div>
+            <div class="tier-lang">
+              Cap no greater than <b>24 months' fees</b>. Anything uncapped, or above 24 months, must escalate.
+            </div>
+          </div>
+
+          <div style="font-size:12px; color:var(--accent); margin-top:8px;">+ Add fallback position</div>
+        </div>
+
+        <!-- Corpus grounding (NeuralChain wedge) -->
+        <div class="ground-box">
+          <div class="ground-head">✦ Grounded in your corpus</div>
+          <div class="ground-body">
+            <b>142 of 168</b> executed vendor MSAs (85%) cap aggregate liability at <b>12 months' fees</b>. The preferred language above was extracted from your most-used variant — not a generic template.
+            <div class="ground-bar"><i></i></div>
+            <span style="font-size:11px; color:var(--text-faint);">85% of executed MSAs · indexed in-VPC by Onyx</span>
+          </div>
+          <div class="ground-actions">
+            <button class="btn">View the 142 sources</button>
+            <button class="btn">Re-scan corpus</button>
+          </div>
+        </div>
+
+        <!-- Severity + escalation -->
+        <div class="meta-row">
+          <div class="meta-cell">
+            <div class="k">Severity</div>
+            <div class="v">High — single highest-exposure deviation</div>
+          </div>
+          <div class="meta-cell">
+            <div class="k">Escalation</div>
+            <div class="v">Beyond fallback → sign-off from <span class="who">General Counsel</span></div>
+          </div>
+        </div>
+
+        <!-- Guidance -->
+        <div class="block">
+          <div class="field-label">Negotiation guidance &amp; common objections</div>
+          <div class="guidance">
+            Counterparties often argue an uncapped carve-out for <b>data breach</b>. Acceptable to concede a <b>super-cap</b> (not unlimited) tied to cyber-insurance limits. If vendor refuses any cap, this is a deal-blocker — route to GC. Used as the basis for redlines on the live Apollo Industries MSA in Review.
+          </div>
+        </div>
+
+        <div style="padding-top:8px; border-top:1px solid var(--border); font-size:11.5px; color:var(--text-faint); display:flex; gap:18px;">
+          <span>Applies to: <strong style="color:var(--text-muted)">Review · Assistant · Agents</strong></span>
+          <span>·</span>
+          <span>Last edited 2h ago by you</span>
+          <span>·</span>
+          <span>Plain English · in-VPC</span>
+        </div>
+
+      </div>
+
+    </div>
+
+  </main>
+
+</div>
+
+</body>
+</html>

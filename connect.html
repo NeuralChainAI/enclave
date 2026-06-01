@@ -1,0 +1,267 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Connect — NeuralChain</title>
+<link rel="stylesheet" href="_shared.css">
+<style>
+  .summary { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 32px; }
+  .stat-card { padding: 16px 20px; background: var(--bg-elev); border: 1px solid var(--border); border-radius: 6px; }
+  .stat-card .num { font-family: var(--serif); font-size: 28px; line-height: 1; margin-bottom: 4px; }
+  .stat-card .lbl { font-size: 12px; color: var(--text-muted); }
+  .stat-card.live .num { color: var(--accent); }
+
+  .cat-section { margin-bottom: 40px; }
+  .cat-head { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 14px; }
+  .cat-title { font-family: var(--serif); font-size: 20px; }
+  .cat-meta { font-size: 12px; color: var(--text-faint); }
+
+  .conn-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+  .conn {
+    padding: 16px;
+    background: var(--bg-elev);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    min-height: 110px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    position: relative;
+    cursor: pointer;
+  }
+  .conn:hover { border-color: var(--border-emph); }
+  .conn.live { border-color: var(--accent); background: var(--bg-panel); }
+  .conn-head { display: flex; gap: 10px; align-items: center; }
+  .conn-logo { width: 36px; height: 36px; background: var(--bg); border: 1px solid var(--border-emph); border-radius: 4px; display: flex; align-items: center; justify-content: center; font-family: var(--serif); font-size: 13px; color: var(--text-muted); flex-shrink: 0; }
+  .conn.live .conn-logo { background: var(--accent-soft); color: var(--text); border-color: var(--accent); }
+  .conn-name { font-family: var(--serif); font-size: 15px; }
+  .conn-status { font-size: 11px; color: var(--text-faint); }
+  .conn-status.live { color: var(--accent); }
+  .conn-meta { font-size: 11px; color: var(--text-muted); margin-top: auto; }
+  .conn-meta strong { color: var(--text); }
+
+  .live-feed { background: var(--bg-elev); border: 1px solid var(--accent-soft); border-radius: 6px; padding: 20px; margin-bottom: 32px; }
+  .live-feed-head { display: flex; justify-content: space-between; margin-bottom: 14px; }
+  .live-feed-title { font-family: var(--serif); font-size: 17px; display: flex; align-items: center; gap: 10px; }
+  .live-dot { width: 8px; height: 8px; background: var(--accent); border-radius: 50%; animation: pulse 2s infinite; }
+  @keyframes pulse { 50% { opacity: 0.3; } }
+  .live-events { font-family: ui-monospace, Menlo, monospace; font-size: 12px; }
+  .live-event { padding: 6px 0; color: var(--text-muted); display: flex; gap: 12px; border-bottom: 1px dashed var(--border); }
+  .live-event:last-child { border-bottom: 0; }
+  .live-event .ts { color: var(--text-faint); }
+  .live-event .sym { color: var(--accent); }
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <aside class="sidebar">
+    <div class="sidebar-brand">NeuralChain<span style="color:var(--accent)">.</span></div>
+    <div class="sidebar-section">Workspace</div>
+    <a class="nav-item" href="dashboard.html"><span class="ico">⌂</span> Home</a>
+    <a class="nav-item" href="assistant.html"><span class="ico">✦</span> Assistant</a>
+    <a class="nav-item" href="workflows.html"><span class="ico">⟳</span> Agents</a>
+    <div class="sidebar-section">Modules</div>
+    <a class="nav-item" href="research.html"><span class="ico">◊</span> Research</a>
+    <a class="nav-item" href="diligence.html"><span class="ico">⊞</span> Diligence</a>    <a class="nav-item" href="review.html"><span class="ico">▤</span> Review</a>
+    <a class="nav-item" href="playbooks.html"><span class="ico">❏</span> Playbooks</a>
+    <a class="nav-item" href="draft.html"><span class="ico">✎</span> Draft</a>
+    <div class="sidebar-section">Admin</div>
+    <a class="nav-item" href="#"><span class="ico">⚿</span> Security</a>
+    <a class="nav-item active" href="settings.html"><span class="ico">⚙</span> Settings</a>
+    <div class="sidebar-footer">
+      <div style="color:var(--text-muted);">Acme Legal · prod</div>
+      <div>Deployed in your VPC</div>
+    </div>
+  </aside>
+
+  <main class="main">
+
+    <div class="page-head">
+      <div>
+        <div style="font-size: 12px; color: var(--text-faint); margin-bottom: 8px;"><a href="settings.html" style="color:var(--text-muted)">Settings</a> &nbsp;/&nbsp; Connectors &nbsp;/&nbsp; <span style="color:var(--text-muted)">Full catalog</span></div>
+        <h1 class="page-title">Connector catalog</h1>
+        <p class="page-sub">Browse and configure every source NeuralChain can pull from. All ingestion happens inside your VPC — credentials in the encrypted vault, content never leaves. Live indexing status is summarized in <a href="settings.html" style="color:var(--accent)">Settings → Connectors &amp; Indexing</a>.</p>
+      </div>
+      <div class="page-actions">
+        <button class="btn">Upload folder</button>
+        <button class="btn btn-primary">+ Add source</button>
+      </div>
+    </div>
+
+    <!-- summary -->
+    <div class="summary">
+      <div class="stat-card live"><div class="num">3</div><div class="lbl">live sources</div></div>
+      <div class="stat-card"><div class="num">12,847</div><div class="lbl">documents indexed</div></div>
+      <div class="stat-card"><div class="num">2m 14s</div><div class="lbl">avg sync latency</div></div>
+      <div class="stat-card"><div class="num">100%</div><div class="lbl">in-VPC processing</div></div>
+    </div>
+
+    <!-- live feed -->
+    <div class="live-feed">
+      <div class="live-feed-head">
+        <div class="live-feed-title"><span class="live-dot"></span> Ingestion · live</div>
+        <span style="color:var(--text-muted); font-size:12px;">last 5 min · 47 events</span>
+      </div>
+      <div class="live-events">
+        <div class="live-event"><span class="ts">14:23:11</span><span class="sym">▸</span><span>iManage · indexed <strong style="color:var(--text)">Stripe MSA Amendment 3.docx</strong> · 11p · routed to Research</span></div>
+        <div class="live-event"><span class="ts">14:23:08</span><span class="sym">▸</span><span>iManage · indexed <strong style="color:var(--text)">Datadog SOW Q2-2026.pdf</strong> · 4p · routed to Research, triggered Triage Agent</span></div>
+        <div class="live-event"><span class="ts">14:23:02</span><span class="sym">▸</span><span>SharePoint · indexed <strong style="color:var(--text)">Indemnity Policy Update v3.docx</strong> · 2p · routed to Knowledge</span></div>
+        <div class="live-event"><span class="ts">14:22:55</span><span class="sym">▸</span><span>iManage · checkpoint · 14 docs processed in batch</span></div>
+        <div class="live-event"><span class="ts">14:22:41</span><span class="sym">▸</span><span>Ironclad · webhook received · <strong style="color:var(--text)">Workflow #4823 completed</strong> · syncing record</span></div>
+      </div>
+    </div>
+
+    <!-- LEGAL DMS -->
+    <section class="cat-section">
+      <div class="cat-head">
+        <div class="cat-title">Legal DMS</div>
+        <div class="cat-meta">document management · ACL-aware</div>
+      </div>
+      <div class="conn-grid">
+        <div class="conn live">
+          <div class="conn-head"><div class="conn-logo">iM</div><div><div class="conn-name">iManage Work</div><div class="conn-status live">● Connected · syncing</div></div></div>
+          <div class="conn-meta"><strong>8,421</strong> docs · last sync 2m ago · ethical walls respected</div>
+        </div>
+        <div class="conn">
+          <div class="conn-head"><div class="conn-logo">ND</div><div><div class="conn-name">NetDocuments</div><div class="conn-status">Available · 2-wk build</div></div></div>
+          <div class="conn-meta">Cabinets · Workspaces · OAuth</div>
+        </div>
+        <div class="conn">
+          <div class="conn-head"><div class="conn-logo">OT</div><div><div class="conn-name">OpenText eDOCS</div><div class="conn-status">Roadmap</div></div></div>
+          <div class="conn-meta">Talk to us for timeline</div>
+        </div>
+        <div class="conn">
+          <div class="conn-head"><div class="conn-logo">WX</div><div><div class="conn-name">Worldox</div><div class="conn-status">Roadmap</div></div></div>
+          <div class="conn-meta">Talk to us for timeline</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CLM -->
+    <section class="cat-section">
+      <div class="cat-head">
+        <div class="cat-title">Contract Lifecycle (CLM)</div>
+        <div class="cat-meta">executed contracts · workflows</div>
+      </div>
+      <div class="conn-grid">
+        <div class="conn live">
+          <div class="conn-head"><div class="conn-logo">IC</div><div><div class="conn-name">Ironclad</div><div class="conn-status live">● Connected · webhooks</div></div></div>
+          <div class="conn-meta"><strong>1,247</strong> records · workflows synced · last event 18s ago</div>
+        </div>
+        <div class="conn">
+          <div class="conn-head"><div class="conn-logo">DS</div><div><div class="conn-name">DocuSign CLM</div><div class="conn-status">Available · 3-wk build</div></div></div>
+          <div class="conn-meta">Lexion-integrated · OAuth 2.0</div>
+        </div>
+        <div class="conn">
+          <div class="conn-head"><div class="conn-logo">IC</div><div><div class="conn-name">Icertis</div><div class="conn-status">Roadmap</div></div></div>
+          <div class="conn-meta">Enterprise CLM</div>
+        </div>
+        <div class="conn">
+          <div class="conn-head"><div class="conn-logo">CW</div><div><div class="conn-name">ContractWorks</div><div class="conn-status">Roadmap</div></div></div>
+          <div class="conn-meta">SMB-focused CLM</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CLOUD STORAGE -->
+    <section class="cat-section">
+      <div class="cat-head">
+        <div class="cat-title">Cloud storage &amp; collaboration</div>
+        <div class="cat-meta">Onyx upstream connectors</div>
+      </div>
+      <div class="conn-grid">
+        <div class="conn live">
+          <div class="conn-head"><div class="conn-logo">SP</div><div><div class="conn-name">SharePoint</div><div class="conn-status live">● Connected</div></div></div>
+          <div class="conn-meta"><strong>3,179</strong> docs · O365 policies inherited</div>
+        </div>
+        <div class="conn">
+          <div class="conn-head"><div class="conn-logo">GD</div><div><div class="conn-name">Google Drive</div><div class="conn-status">Available · same-day</div></div></div>
+          <div class="conn-meta">Workspace · domain-wide</div>
+        </div>
+        <div class="conn">
+          <div class="conn-head"><div class="conn-logo">S3</div><div><div class="conn-name">Amazon S3</div><div class="conn-status">Available · same-day</div></div></div>
+          <div class="conn-meta">IAM roles · prefix-scoped</div>
+        </div>
+        <div class="conn">
+          <div class="conn-head"><div class="conn-logo">BX</div><div><div class="conn-name">Box</div><div class="conn-status">Available · same-day</div></div></div>
+          <div class="conn-meta">Folders · collaboration permissions</div>
+        </div>
+        <div class="conn">
+          <div class="conn-head"><div class="conn-logo">DB</div><div><div class="conn-name">Dropbox</div><div class="conn-status">Available · same-day</div></div></div>
+          <div class="conn-meta">Standard ingestion</div>
+        </div>
+        <div class="conn">
+          <div class="conn-head"><div class="conn-logo">CF</div><div><div class="conn-name">Confluence</div><div class="conn-status">Available · same-day</div></div></div>
+          <div class="conn-meta">Spaces · permissions inherited</div>
+        </div>
+        <div class="conn">
+          <div class="conn-head"><div class="conn-logo">EG</div><div><div class="conn-name">Egnyte</div><div class="conn-status">Available · same-day</div></div></div>
+          <div class="conn-meta">Standard ingestion</div>
+        </div>
+        <div class="conn">
+          <div class="conn-head"><div class="conn-logo">AZ</div><div><div class="conn-name">Azure Blob</div><div class="conn-status">Available · same-day</div></div></div>
+          <div class="conn-meta">SAS tokens · container scoped</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- LEGAL RESEARCH (MCP) -->
+    <section class="cat-section">
+      <div class="cat-head">
+        <div class="cat-title">Legal research <span style="font-size: 11px; color: var(--accent); text-transform: uppercase; letter-spacing: 0.1em; margin-left: 8px;">via MCP</span></div>
+        <div class="cat-meta">runtime lookups · no bulk indexing</div>
+      </div>
+      <div class="conn-grid">
+        <div class="conn">
+          <div class="conn-head"><div class="conn-logo">WL</div><div><div class="conn-name">Westlaw</div><div class="conn-status">Available · 1-wk build</div></div></div>
+          <div class="conn-meta">MCP server · runtime query</div>
+        </div>
+        <div class="conn">
+          <div class="conn-head"><div class="conn-logo">LN</div><div><div class="conn-name">LexisNexis</div><div class="conn-status">Available · 1-wk build</div></div></div>
+          <div class="conn-meta">MCP server · runtime query</div>
+        </div>
+        <div class="conn">
+          <div class="conn-head"><div class="conn-logo">BL</div><div><div class="conn-name">Bloomberg Law</div><div class="conn-status">Roadmap</div></div></div>
+          <div class="conn-meta">MCP server</div>
+        </div>
+        <div class="conn">
+          <div class="conn-head"><div class="conn-logo">FC</div><div><div class="conn-name">Fastcase</div><div class="conn-status">Roadmap</div></div></div>
+          <div class="conn-meta">MCP server</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- COMMUNICATIONS -->
+    <section class="cat-section">
+      <div class="cat-head">
+        <div class="cat-title">Email &amp; communications</div>
+        <div class="cat-meta">trigger ingestion + agent webhooks</div>
+      </div>
+      <div class="conn-grid">
+        <div class="conn">
+          <div class="conn-head"><div class="conn-logo">OL</div><div><div class="conn-name">Outlook / O365</div><div class="conn-status">Available · same-day</div></div></div>
+          <div class="conn-meta">Shared mailboxes · attachments</div>
+        </div>
+        <div class="conn">
+          <div class="conn-head"><div class="conn-logo">GM</div><div><div class="conn-name">Gmail</div><div class="conn-status">Available · same-day</div></div></div>
+          <div class="conn-meta">Workspace mailboxes</div>
+        </div>
+        <div class="conn">
+          <div class="conn-head"><div class="conn-logo">SL</div><div><div class="conn-name">Slack</div><div class="conn-status">Available · same-day</div></div></div>
+          <div class="conn-meta">Channels &amp; DMs</div>
+        </div>
+        <div class="conn">
+          <div class="conn-head"><div class="conn-logo">+</div><div><div class="conn-name">Talk to us</div><div class="conn-status">Custom build</div></div></div>
+          <div class="conn-meta">Most legal connectors built in 2-6 weeks</div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+</div>
+
+</body>
+</html>

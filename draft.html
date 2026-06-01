@@ -1,0 +1,208 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Draft — NeuralChain</title>
+<link rel="stylesheet" href="_shared.css">
+<style>
+  .draft-layout { display:grid; grid-template-columns: 1fr 360px; gap:24px; align-items:start; }
+
+  .editor { background:var(--bg-elev); border:1px solid var(--border); border-radius:6px; overflow:hidden; }
+  .editor-bar { display:flex; justify-content:space-between; align-items:center; padding:12px 18px; border-bottom:1px solid var(--border); }
+  .editor-title { font-family:var(--serif); font-size:15px; }
+  .editor-status { font-size:11px; color:var(--text-muted); display:flex; gap:10px; align-items:center; }
+  .editor-tools { display:flex; gap:6px; }
+  .icon-btn { width:30px; height:30px; display:inline-flex; align-items:center; justify-content:center; border:1px solid var(--border-emph); border-radius:4px; color:var(--text-muted); font-size:13px; background:var(--bg); }
+  .icon-btn:hover { color:var(--text); }
+
+  .doc-canvas { padding:36px 48px; font-family:var(--serif); font-size:14px; line-height:1.95; color:var(--text-muted); max-height:74vh; overflow:auto; }
+  .doc-canvas h2 { text-align:center; font-size:18px; color:var(--text); margin-bottom:2px; letter-spacing:0.02em; }
+  .doc-canvas .doc-sub { text-align:center; font-size:11px; color:var(--text-faint); font-family:var(--sans); text-transform:uppercase; letter-spacing:0.08em; margin-bottom:26px; }
+  .doc-canvas h3 { font-size:14px; color:var(--text); margin:20px 0 6px; }
+  .doc-canvas p { margin-bottom:12px; }
+  .ai-clause { background:rgba(26,122,82,0.10); border-left:2px solid var(--accent); padding:12px 14px 10px; border-radius:0 4px 4px 0; color:var(--text); position:relative; margin:6px 0 14px; }
+  .ai-tag { position:absolute; top:-9px; left:12px; font-size:9px; letter-spacing:0.06em; text-transform:uppercase; background:var(--accent); color:var(--text); padding:1px 7px; border-radius:3px; font-family:var(--sans); }
+  .ai-clause-actions { margin-top:10px; display:flex; gap:6px; }
+  .mini-btn { font-size:11px; padding:4px 10px; border-radius:4px; border:1px solid var(--border-emph); background:var(--bg); color:var(--text-muted); }
+  .mini-btn.primary { background:var(--accent); border-color:var(--accent); color:var(--text); }
+  .mini-btn:hover { color:var(--text); }
+  .cursor { display:inline-block; width:1px; height:15px; background:var(--accent); vertical-align:-2px; animation:blink 1s infinite; }
+  @keyframes blink { 50% { opacity:0; } }
+
+  .rail { display:flex; flex-direction:column; gap:16px; position:sticky; top:24px; }
+  .rail-card { background:var(--bg-elev); border:1px solid var(--border); border-radius:6px; padding:16px; }
+  .rail-title { font-size:11px; letter-spacing:0.08em; text-transform:uppercase; color:var(--text-faint); margin-bottom:12px; }
+  .ask-box { background:var(--bg); border:1px solid var(--border-emph); border-radius:6px; padding:12px; }
+  .ask-box textarea { width:100%; background:transparent; border:0; color:var(--text); font-family:inherit; font-size:13px; resize:none; line-height:1.5; }
+  .ask-box textarea:focus { outline:none; }
+  .ask-foot { display:flex; justify-content:space-between; align-items:center; margin-top:10px; }
+  .ask-send { background:var(--accent); color:var(--text); padding:6px 14px; border-radius:4px; font-size:12px; }
+
+  .pills { display:flex; flex-wrap:wrap; gap:6px; }
+  .pill { font-size:11px; padding:4px 10px; border-radius:999px; border:1px solid var(--border-emph); background:var(--bg); color:var(--text-muted); cursor:pointer; }
+  .pill.active { background:var(--accent-soft); border-color:var(--accent); color:var(--text); }
+
+  .prec { padding:11px 0; border-bottom:1px solid var(--border); cursor:pointer; }
+  .prec:last-child { border-bottom:0; }
+  .prec:hover .prec-doc { color:var(--accent); }
+  .prec-doc { color:var(--text); font-size:13px; margin-bottom:2px; }
+  .prec-meta { color:var(--text-faint); font-size:11px; }
+  .prec-num { font-family:ui-monospace,monospace; font-size:10px; color:var(--accent); background:var(--accent-soft); padding:1px 5px; border-radius:3px; margin-right:6px; }
+
+  .lib-item { display:flex; justify-content:space-between; padding:9px 0; border-bottom:1px solid var(--border); font-size:13px; color:var(--text-muted); cursor:pointer; }
+  .lib-item:last-child { border-bottom:0; }
+  .lib-item:hover { color:var(--text); }
+  .lib-item .add { color:var(--accent); font-size:12px; }
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <aside class="sidebar">
+    <div class="sidebar-brand">NeuralChain<span style="color:var(--accent)">.</span></div>
+    <div class="sidebar-section">Workspace</div>
+    <a class="nav-item" href="dashboard.html"><span class="ico">⌂</span> Home</a>
+    <a class="nav-item" href="assistant.html"><span class="ico">✦</span> Assistant</a>
+    <a class="nav-item" href="workflows.html"><span class="ico">⟳</span> Agents</a>
+    <div class="sidebar-section">Modules</div>
+    <a class="nav-item" href="research.html"><span class="ico">◊</span> Research</a>
+    <a class="nav-item" href="diligence.html"><span class="ico">⊞</span> Diligence</a>
+    <a class="nav-item" href="review.html"><span class="ico">▤</span> Review</a>
+    <a class="nav-item" href="playbooks.html"><span class="ico">❏</span> Playbooks</a>
+    <a class="nav-item active" href="draft.html"><span class="ico">✎</span> Draft</a>
+    <div class="sidebar-section">Admin</div>
+    <a class="nav-item" href="#"><span class="ico">⚿</span> Security</a>
+    <a class="nav-item" href="settings.html"><span class="ico">⚙</span> Settings</a>
+    <div class="sidebar-footer">
+      <div style="color:var(--text-muted);">Acme Legal · prod</div>
+      <div>Deployed in your VPC</div>
+    </div>
+  </aside>
+
+  <main class="main">
+
+    <div class="page-head">
+      <div>
+        <div style="font-size: 11px; letter-spacing: 0.12em; color: var(--accent); text-transform: uppercase; margin-bottom: 8px;">Style-matched to your corpus · precedent-grounded</div>
+        <h1 class="page-title">Draft</h1>
+        <p class="page-sub">Generate contracts and clauses in your firm's own voice. Every suggestion is pulled from your executed precedents — not a generic template library.</p>
+      </div>
+      <div class="page-actions">
+        <button class="btn">New from precedent</button>
+        <button class="btn">Send to Review</button>
+        <button class="btn btn-primary">Export to Word</button>
+      </div>
+    </div>
+
+    <div class="draft-layout">
+
+      <!-- LEFT: editor canvas -->
+      <div class="editor">
+        <div class="editor-bar">
+          <div class="editor-title">Mutual NDA — Project Atlas</div>
+          <div class="editor-status">
+            <span>Draft · AI-assisted</span>
+            <span>·</span>
+            <span>saved 30s ago</span>
+            <div class="editor-tools" style="margin-left:8px;">
+              <button class="icon-btn" title="Bold">B</button>
+              <button class="icon-btn" title="Comment">❝</button>
+              <button class="icon-btn" title="Version history">⟲</button>
+            </div>
+          </div>
+        </div>
+        <div class="doc-canvas">
+          <h2>MUTUAL NON-DISCLOSURE AGREEMENT</h2>
+          <div class="doc-sub">Acme Corp. &nbsp;·&nbsp; Project Atlas &nbsp;·&nbsp; Draft v3</div>
+
+          <p>This Mutual Non-Disclosure Agreement ("Agreement") is entered into as of the date of last signature below, by and between Acme Corp. and the counterparty identified in the signature block (each a "Party").</p>
+
+          <h3>1. Definition of Confidential Information</h3>
+          <p>"Confidential Information" means any non-public information disclosed by one Party to the other, whether orally, in writing, or by inspection of tangible objects, that is designated as confidential or that reasonably should be understood to be confidential given the nature of the information and the circumstances of disclosure.</p>
+
+          <h3>2. Term</h3>
+          <div class="ai-clause">
+            <span class="ai-tag">✦ AI-drafted · your voice</span>
+            The obligations of confidentiality under this Agreement shall commence on the Effective Date and shall continue for a period of <b>three (3) years</b> thereafter, provided that with respect to any Confidential Information constituting a trade secret, such obligations shall continue for so long as such information remains a trade secret under applicable law.
+            <div class="ai-clause-actions">
+              <button class="mini-btn primary">Keep</button>
+              <button class="mini-btn">Regenerate</button>
+              <button class="mini-btn">Shorten</button>
+              <button class="mini-btn">Revise…</button>
+            </div>
+          </div>
+
+          <h3>3. Residuals</h3>
+          <p>Neither Party shall be restricted from using general knowledge, skills, and experience retained in the unaided memory of its personnel<span class="cursor"></span></p>
+
+          <p style="color:var(--text-faint); font-style:italic;">…continue drafting, or ask the AI in the panel to the right.</p>
+        </div>
+      </div>
+
+      <!-- RIGHT: drafting rail -->
+      <div class="rail">
+
+        <div class="rail-card">
+          <div class="rail-title">Ask AI to draft or revise</div>
+          <div class="ask-box">
+            <textarea rows="3">Make the term 3 years and add a residuals clause that matches how we usually handle it.</textarea>
+            <div class="ask-foot">
+              <span style="font-size:11px; color:var(--text-faint);">Claude Sonnet 4.6 · in-VPC</span>
+              <button class="ask-send">Draft ›</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="rail-card">
+          <div class="rail-title">Writing in your voice</div>
+          <div class="pills">
+            <span class="pill active">Firm house style</span>
+            <span class="pill">Plain English</span>
+            <span class="pill">Conservative</span>
+            <span class="pill">Counterparty-friendly</span>
+          </div>
+          <div style="font-size:11px; color:var(--text-faint); margin-top:10px; line-height:1.5;">
+            Style learned from 1,240 executed agreements in your corpus.
+          </div>
+        </div>
+
+        <div class="rail-card">
+          <div class="rail-title">Precedents referenced</div>
+          <div class="prec">
+            <div class="prec-doc"><span class="prec-num">1</span>Mutual NDA — Beacon Capital</div>
+            <div class="prec-meta">executed 2025-11-02 · §2 Term, 3-year · iManage</div>
+          </div>
+          <div class="prec">
+            <div class="prec-doc"><span class="prec-num">2</span>Mutual NDA — Orion Partners</div>
+            <div class="prec-meta">executed 2025-08-19 · §3 Residuals · iManage</div>
+          </div>
+          <div class="prec">
+            <div class="prec-doc"><span class="prec-num">3</span>Acme NDA — standard template</div>
+            <div class="prec-meta">Clause library · approved by GC 2025-06</div>
+          </div>
+        </div>
+
+        <div class="rail-card">
+          <div class="rail-title">Insert clause from library</div>
+          <div class="lib-item"><span>Governing law (Delaware)</span><span class="add">+ Insert</span></div>
+          <div class="lib-item"><span>Injunctive relief</span><span class="add">+ Insert</span></div>
+          <div class="lib-item"><span>Return / destruction of materials</span><span class="add">+ Insert</span></div>
+          <div class="lib-item"><span>No license granted</span><span class="add">+ Insert</span></div>
+        </div>
+
+        <div class="rail-card" style="display:flex; gap:8px;">
+          <button class="btn" style="flex:1;">Save to corpus</button>
+          <button class="btn btn-primary" style="flex:1;">Export to Word</button>
+        </div>
+
+      </div>
+
+    </div>
+
+  </main>
+
+</div>
+
+</body>
+</html>

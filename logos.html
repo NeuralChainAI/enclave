@@ -1,0 +1,298 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Enclave — Logo Concepts</title>
+<link rel="stylesheet" href="_shared.css">
+<style>
+  body { padding: 56px; max-width: 1200px; margin: 0 auto; }
+  .eyebrow { font-size: 12px; letter-spacing: 0.16em; color: var(--accent); text-transform: uppercase; margin-bottom: 16px; }
+  h1 { font-family: var(--serif); font-size: 40px; margin-bottom: 10px; }
+  .lead { color: var(--text-muted); max-width: 640px; margin-bottom: 8px; line-height: 1.6; }
+  .note { color: var(--text-faint); font-size: 12px; max-width: 640px; margin-bottom: 48px; }
+
+  .sec-label { font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-faint); margin: 48px 0 18px; padding-bottom: 8px; border-bottom: 1px solid var(--border); }
+
+  /* hero primary lockup */
+  .hero { display:flex; align-items:center; gap:22px; padding:44px; background:var(--bg-elev); border:1px solid var(--border); border-radius:10px; margin-bottom:8px; }
+  .hero svg { width:84px; height:84px; flex-shrink:0; }
+  .hero .wm { font-family:var(--serif); font-size:52px; letter-spacing:-0.01em; }
+  .hero .wm .dot { color:var(--accent); }
+  .hero .tag { color:var(--text-faint); font-size:13px; margin-top:6px; letter-spacing:0.02em; }
+
+  /* concept grid */
+  .grid { display:grid; grid-template-columns:repeat(3, 1fr); gap:16px; }
+  .concept { background:var(--bg-elev); border:1px solid var(--border); border-radius:8px; padding:28px 24px; display:flex; flex-direction:column; align-items:center; text-align:center; }
+  .concept:hover { border-color:var(--border-emph); }
+  .concept .mark { width:72px; height:72px; margin-bottom:20px; }
+  .concept .lockup { display:flex; align-items:center; gap:10px; padding-top:18px; margin-top:4px; border-top:1px solid var(--border); width:100%; justify-content:center; }
+  .concept .lockup svg { width:26px; height:26px; }
+  .concept .lockup .wm { font-family:var(--serif); font-size:22px; }
+  .concept .lockup .wm .dot { color:var(--accent); }
+  .concept .cname { font-size:11px; letter-spacing:0.08em; text-transform:uppercase; color:var(--accent); margin-top:18px; }
+  .concept .cdesc { font-size:12px; color:var(--text-muted); margin-top:6px; line-height:1.55; }
+
+  /* surfaces row */
+  .surfaces { display:flex; gap:16px; flex-wrap:wrap; align-items:center; }
+  .surf { border-radius:8px; padding:20px; display:flex; flex-direction:column; align-items:center; gap:10px; border:1px solid var(--border); }
+  .surf .scap { font-size:10px; letter-spacing:0.06em; text-transform:uppercase; color:var(--text-faint); }
+  .surf.dark { background:var(--bg); }
+  .surf.panel { background:var(--bg-panel); }
+  .surf.light { background:#f4f1ea; }
+  .surf.light .scap { color:#8a8475; }
+  .surf.accent { background:var(--accent); }
+  .surf.accent .scap { color:#bfe6d2; }
+  .app-icon { width:56px; height:56px; border-radius:13px; display:flex; align-items:center; justify-content:center; }
+  .fav { width:18px; height:18px; }
+</style>
+</head>
+<body>
+
+<div class="eyebrow">Brand exploration · Enclave</div>
+<h1>Enclave — logo concepts</h1>
+<p class="lead">Six vector marks built on the locked tokens: charcoal ground, single forest-green accent, serif wordmark, no gradient. Every mark plays on the brand idea — a protected core inside a private boundary (your data, in your VPC).</p>
+<p class="note">These are SVG (editable, infinitely scalable) — structure and direction, not final pixels. Pick a direction and I'll refine geometry, spacing, and the wordmark kerning.</p>
+
+<!-- Primary lockup -->
+<div class="hero">
+  <!-- Mark: nested enclosure -->
+  <svg viewBox="0 0 64 64" fill="none">
+    <rect x="6" y="6" width="52" height="52" rx="14" stroke="#1a7a52" stroke-width="3"/>
+    <rect x="23" y="23" width="18" height="18" rx="4" fill="#1a7a52"/>
+  </svg>
+  <div>
+    <div class="wm">Enclave<span class="dot">.</span></div>
+    <div class="tag">Private legal AI, inside your boundary.</div>
+  </div>
+</div>
+
+<div class="sec-label">Marks · six directions</div>
+<div class="grid">
+
+  <!-- 1. Nested enclosure -->
+  <div class="concept">
+    <svg class="mark" viewBox="0 0 64 64" fill="none">
+      <rect x="6" y="6" width="52" height="52" rx="14" stroke="#1a7a52" stroke-width="3"/>
+      <rect x="23" y="23" width="18" height="18" rx="4" fill="#1a7a52"/>
+    </svg>
+    <div class="lockup">
+      <svg viewBox="0 0 64 64" fill="none"><rect x="6" y="6" width="52" height="52" rx="14" stroke="#1a7a52" stroke-width="4"/><rect x="23" y="23" width="18" height="18" rx="4" fill="#1a7a52"/></svg>
+      <span class="wm">Enclave<span class="dot">.</span></span>
+    </div>
+    <div class="cname">Enclosure</div>
+    <div class="cdesc">Inner core (your data) held inside an outer boundary (your VPC). The most literal.</div>
+  </div>
+
+  <!-- 2. Brackets + core -->
+  <div class="concept">
+    <svg class="mark" viewBox="0 0 64 64" fill="none" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M24 12 H14 V52 H24" stroke="#1a7a52" stroke-width="3.5"/>
+      <path d="M40 12 H50 V52 H40" stroke="#1a7a52" stroke-width="3.5"/>
+      <circle cx="32" cy="32" r="7" fill="#1a7a52"/>
+    </svg>
+    <div class="lockup">
+      <svg viewBox="0 0 64 64" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M24 12 H14 V52 H24" stroke="#1a7a52" stroke-width="5"/><path d="M40 12 H50 V52 H40" stroke="#1a7a52" stroke-width="5"/><circle cx="32" cy="32" r="7" fill="#1a7a52"/></svg>
+      <span class="wm">Enclave<span class="dot">.</span></span>
+    </div>
+    <div class="cname">Brackets</div>
+    <div class="cdesc">Two walls enclosing a single protected element. Reads as code + containment.</div>
+  </div>
+
+  <!-- 3. Hexagon keep -->
+  <div class="concept">
+    <svg class="mark" viewBox="0 0 64 64" fill="none" stroke-linejoin="round">
+      <polygon points="32,6 55,19 55,45 32,58 9,45 9,19" stroke="#1a7a52" stroke-width="3"/>
+      <circle cx="32" cy="32" r="8.5" fill="#1a7a52"/>
+    </svg>
+    <div class="lockup">
+      <svg viewBox="0 0 64 64" fill="none" stroke-linejoin="round"><polygon points="32,6 55,19 55,45 32,58 9,45 9,19" stroke="#1a7a52" stroke-width="4"/><circle cx="32" cy="32" r="8.5" fill="#1a7a52"/></svg>
+      <span class="wm">Enclave<span class="dot">.</span></span>
+    </div>
+    <div class="cname">Keep</div>
+    <div class="cdesc">Hexagonal perimeter around a sealed core. Token / security-grade feel.</div>
+  </div>
+
+  <!-- 4. Perimeter with gate -->
+  <div class="concept">
+    <svg class="mark" viewBox="0 0 64 64" fill="none" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M38 10 H54 V54 H10 V10 H26" stroke="#1a7a52" stroke-width="3.5"/>
+      <rect x="24" y="24" width="16" height="16" rx="3" fill="#1a7a52"/>
+    </svg>
+    <div class="lockup">
+      <svg viewBox="0 0 64 64" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M38 10 H54 V54 H10 V10 H26" stroke="#1a7a52" stroke-width="5"/><rect x="24" y="24" width="16" height="16" rx="3" fill="#1a7a52"/></svg>
+      <span class="wm">Enclave<span class="dot">.</span></span>
+    </div>
+    <div class="cname">Gateway</div>
+    <div class="cdesc">A boundary with one controlled opening — the single guarded entry to your enclave.</div>
+  </div>
+
+  <!-- 5. Negative-space E tile -->
+  <div class="concept">
+    <svg class="mark" viewBox="0 0 64 64">
+      <rect x="6" y="6" width="52" height="52" rx="14" fill="#1a7a52"/>
+      <path d="M42 20 H24 V44 H42 M24 32 H37" stroke="#0a0a0a" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    <div class="lockup">
+      <svg viewBox="0 0 64 64"><rect x="6" y="6" width="52" height="52" rx="14" fill="#1a7a52"/><path d="M42 20 H24 V44 H42 M24 32 H37" stroke="#0a0a0a" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span class="wm">Enclave<span class="dot">.</span></span>
+    </div>
+    <div class="cname">Monogram E</div>
+    <div class="cdesc">Solid app-tile with the E cut as negative space. Best as a favicon / app icon.</div>
+  </div>
+
+  <!-- 6. Shield aperture -->
+  <div class="concept">
+    <svg class="mark" viewBox="0 0 64 64" fill="none" stroke-linejoin="round">
+      <path d="M32 7 L54 16 V34 C54 47 44 54 32 58 C20 54 10 47 10 34 V16 Z" stroke="#1a7a52" stroke-width="3"/>
+      <rect x="24" y="26" width="16" height="14" rx="3" fill="#1a7a52"/>
+    </svg>
+    <div class="lockup">
+      <svg viewBox="0 0 64 64" fill="none" stroke-linejoin="round"><path d="M32 7 L54 16 V34 C54 47 44 54 32 58 C20 54 10 47 10 34 V16 Z" stroke="#1a7a52" stroke-width="4"/><rect x="24" y="26" width="16" height="14" rx="3" fill="#1a7a52"/></svg>
+      <span class="wm">Enclave<span class="dot">.</span></span>
+    </div>
+    <div class="cname">Aegis</div>
+    <div class="cdesc">Shield holding a vaulted core. Leans into the protection / trust message.</div>
+  </div>
+
+</div>
+
+<div class="sec-label">Legal-adjacent · six directions</div>
+<p class="lead" style="margin:-8px 0 24px;">Same rule throughout: a legal glyph that still encloses a protected core, so the mark reads <em>law</em> and <em>enclave</em> at once — not one or the other.</p>
+<div class="grid">
+
+  <!-- L1. Section sign in a boundary -->
+  <div class="concept">
+    <svg class="mark" viewBox="0 0 64 64" fill="none">
+      <rect x="6" y="6" width="52" height="52" rx="14" stroke="#1a7a52" stroke-width="3"/>
+      <text x="32" y="45" font-family="Georgia, serif" font-size="36" fill="#1a7a52" text-anchor="middle">§</text>
+    </svg>
+    <div class="lockup">
+      <svg viewBox="0 0 64 64" fill="none"><rect x="6" y="6" width="52" height="52" rx="14" stroke="#1a7a52" stroke-width="4"/><text x="32" y="45" font-family="Georgia, serif" font-size="36" fill="#1a7a52" text-anchor="middle">§</text></svg>
+      <span class="wm">Enclave<span class="dot">.</span></span>
+    </div>
+    <div class="cname">Section §</div>
+    <div class="cdesc">The section sign — the universal mark of a clause — held inside the enclave boundary. Unmistakably legal, instantly ownable.</div>
+  </div>
+
+  <!-- L2. Colonnade -->
+  <div class="concept">
+    <svg class="mark" viewBox="0 0 64 64" fill="none" stroke="#1a7a52" stroke-width="3.5" stroke-linecap="round">
+      <path d="M13 15 H51"/>
+      <path d="M13 50 H51"/>
+      <path d="M21 18 V47"/>
+      <path d="M43 18 V47"/>
+      <rect x="27" y="27" width="10" height="11" rx="2" fill="#1a7a52" stroke="none"/>
+    </svg>
+    <div class="lockup">
+      <svg viewBox="0 0 64 64" fill="none" stroke="#1a7a52" stroke-width="4.5" stroke-linecap="round"><path d="M13 15 H51"/><path d="M13 50 H51"/><path d="M21 18 V47"/><path d="M43 18 V47"/><rect x="27" y="27" width="10" height="11" rx="2" fill="#1a7a52" stroke="none"/></svg>
+      <span class="wm">Enclave<span class="dot">.</span></span>
+    </div>
+    <div class="cname">Colonnade</div>
+    <div class="cdesc">Two columns and a lintel — the courthouse vocabulary — but the pillars literally wall off a protected core. Strongest law + enclave fusion.</div>
+  </div>
+
+  <!-- L3. Portico / pediment -->
+  <div class="concept">
+    <svg class="mark" viewBox="0 0 64 64" fill="none" stroke="#1a7a52" stroke-width="3.5" stroke-linejoin="round" stroke-linecap="round">
+      <path d="M10 25 L32 11 L54 25 Z"/>
+      <path d="M15 30 V47 M32 30 V47 M49 30 V47"/>
+      <path d="M11 51 H53"/>
+    </svg>
+    <div class="lockup">
+      <svg viewBox="0 0 64 64" fill="none" stroke="#1a7a52" stroke-width="4.5" stroke-linejoin="round" stroke-linecap="round"><path d="M10 25 L32 11 L54 25 Z"/><path d="M15 30 V47 M32 30 V47 M49 30 V47"/><path d="M11 51 H53"/></svg>
+      <span class="wm">Enclave<span class="dot">.</span></span>
+    </div>
+    <div class="cname">Portico</div>
+    <div class="cdesc">The pediment-and-columns facade reads "court / institution" at a glance. More literal than Colonnade; risks the generic "bank" look.</div>
+  </div>
+
+  <!-- L4. Seal -->
+  <div class="concept">
+    <svg class="mark" viewBox="0 0 64 64" fill="none" stroke="#1a7a52">
+      <circle cx="32" cy="32" r="24" stroke-width="3" stroke-dasharray="2 4.2"/>
+      <circle cx="32" cy="32" r="16" stroke-width="3"/>
+      <circle cx="32" cy="32" r="6.5" fill="#1a7a52" stroke="none"/>
+    </svg>
+    <div class="lockup">
+      <svg viewBox="0 0 64 64" fill="none" stroke="#1a7a52"><circle cx="32" cy="32" r="24" stroke-width="4" stroke-dasharray="2 4.2"/><circle cx="32" cy="32" r="16" stroke-width="4"/><circle cx="32" cy="32" r="6.5" fill="#1a7a52" stroke="none"/></svg>
+      <span class="wm">Enclave<span class="dot">.</span></span>
+    </div>
+    <div class="cname">Seal</div>
+    <div class="cdesc">A notarial seal with a serrated edge — double meaning: <em>official / legal</em> and <em>sealed / private</em>. Carries the enclave idea without any wall.</div>
+  </div>
+
+  <!-- L5. Scales -->
+  <div class="concept">
+    <svg class="mark" viewBox="0 0 64 64" fill="none" stroke="#1a7a52" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M32 13 V50"/>
+      <path d="M19 50 H45"/>
+      <path d="M16 19 H48"/>
+      <path d="M16 19 L11 31 H21 Z"/>
+      <path d="M48 19 L43 31 H53 Z"/>
+      <circle cx="32" cy="14" r="2.4" fill="#1a7a52" stroke="none"/>
+    </svg>
+    <div class="lockup">
+      <svg viewBox="0 0 64 64" fill="none" stroke="#1a7a52" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="M32 13 V50"/><path d="M19 50 H45"/><path d="M16 19 H48"/><path d="M16 19 L11 31 H21 Z"/><path d="M48 19 L43 31 H53 Z"/><circle cx="32" cy="14" r="2.4" fill="#1a7a52" stroke="none"/></svg>
+      <span class="wm">Enclave<span class="dot">.</span></span>
+    </div>
+    <div class="cname">Scales</div>
+    <div class="cdesc">The expected choice — scales of justice. Most legible as "law," least distinctive: hundreds of legal brands already use it. Listed for completeness.</div>
+  </div>
+
+  <!-- L6. Statute / codex -->
+  <div class="concept">
+    <svg class="mark" viewBox="0 0 64 64" fill="none" stroke="#1a7a52" stroke-width="3" stroke-linejoin="round" stroke-linecap="round">
+      <rect x="14" y="12" width="36" height="40" rx="4"/>
+      <path d="M22 12 V52"/>
+      <rect x="30" y="26" width="14" height="12" rx="2.5" fill="#1a7a52" stroke="none"/>
+    </svg>
+    <div class="lockup">
+      <svg viewBox="0 0 64 64" fill="none" stroke="#1a7a52" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"><rect x="14" y="12" width="36" height="40" rx="4"/><path d="M22 12 V52"/><rect x="30" y="26" width="14" height="12" rx="2.5" fill="#1a7a52" stroke="none"/></svg>
+      <span class="wm">Enclave<span class="dot">.</span></span>
+    </div>
+    <div class="cname">Statute</div>
+    <div class="cdesc">A bound codex with a guarded core — the firm's contract corpus, sealed inside. Ties the mark to what the product actually indexes.</div>
+  </div>
+
+</div>
+
+<div class="sec-label">The "Enclosure" mark on surfaces</div>
+<div class="surfaces">
+  <div class="surf dark">
+    <div class="app-icon" style="background:var(--bg-elev); border:1px solid var(--border);">
+      <svg viewBox="0 0 64 64" fill="none" width="34" height="34"><rect x="6" y="6" width="52" height="52" rx="14" stroke="#1a7a52" stroke-width="4"/><rect x="23" y="23" width="18" height="18" rx="4" fill="#1a7a52"/></svg>
+    </div>
+    <div class="scap">App icon · dark</div>
+  </div>
+
+  <div class="surf accent">
+    <div class="app-icon">
+      <svg viewBox="0 0 64 64" fill="none" width="34" height="34"><rect x="6" y="6" width="52" height="52" rx="14" stroke="#0a0a0a" stroke-width="4"/><rect x="23" y="23" width="18" height="18" rx="4" fill="#0a0a0a"/></svg>
+    </div>
+    <div class="scap">Reversed · on accent</div>
+  </div>
+
+  <div class="surf light">
+    <div class="app-icon" style="background:#fff;">
+      <svg viewBox="0 0 64 64" fill="none" width="34" height="34"><rect x="6" y="6" width="52" height="52" rx="14" stroke="#1a7a52" stroke-width="4"/><rect x="23" y="23" width="18" height="18" rx="4" fill="#1a7a52"/></svg>
+    </div>
+    <div class="scap">App icon · light</div>
+  </div>
+
+  <div class="surf panel">
+    <span style="font-family:var(--serif); font-size:13px; color:var(--text-muted);">browser tab</span>
+    <div style="display:flex; align-items:center; gap:7px; background:var(--bg); padding:6px 12px; border-radius:6px 6px 0 0; border:1px solid var(--border);">
+      <svg class="fav" viewBox="0 0 64 64" fill="none"><rect x="4" y="4" width="56" height="56" rx="14" stroke="#1a7a52" stroke-width="6"/><rect x="22" y="22" width="20" height="20" rx="4" fill="#1a7a52"/></svg>
+      <span style="font-size:12px; color:var(--text-muted);">Enclave</span>
+    </div>
+    <div class="scap">Favicon @ 16px</div>
+  </div>
+
+  <div class="surf dark">
+    <div style="font-family:var(--serif); font-size:26px;">Enclave<span style="color:var(--accent)">.</span></div>
+    <div class="scap">Wordmark only</div>
+  </div>
+</div>
+
+</body>
+</html>

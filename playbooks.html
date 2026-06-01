@@ -1,0 +1,214 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Playbooks — NeuralChain</title>
+<link rel="stylesheet" href="_shared.css">
+<style>
+  /* create paths */
+  .create-row { display:grid; grid-template-columns: 1.3fr 1fr 1fr; gap:14px; margin-bottom:36px; }
+  .create { background:var(--bg-elev); border:1px solid var(--border); border-radius:8px; padding:22px; display:flex; flex-direction:column; min-height:150px; }
+  .create:hover { border-color:var(--border-emph); }
+  .create.feat { border-color:var(--accent-soft); background:linear-gradient(180deg, rgba(26,122,82,0.08), var(--bg-elev) 70%); }
+  .create-ic { font-size:18px; color:var(--accent); margin-bottom:14px; }
+  .create.alt .create-ic { color:var(--text-muted); }
+  .create-name { font-family:var(--serif); font-size:18px; margin-bottom:6px; }
+  .create-desc { font-size:12.5px; color:var(--text-muted); line-height:1.6; flex:1; }
+  .create-cta { margin-top:14px; font-size:12px; color:var(--accent); }
+  .create.alt .create-cta { color:var(--text-muted); }
+  .create .tagline { font-size:10px; letter-spacing:0.08em; text-transform:uppercase; color:var(--accent); margin-bottom:12px; }
+
+  .sec-label { font-size:11px; letter-spacing:0.08em; text-transform:uppercase; color:var(--text-faint); margin-bottom:14px; display:flex; justify-content:space-between; align-items:center; }
+
+  .pb-grid { display:grid; grid-template-columns: 1fr 1fr; gap:14px; }
+  .pb-card { background:var(--bg-elev); border:1px solid var(--border); border-radius:8px; padding:20px 22px; display:flex; flex-direction:column; }
+  .pb-card:hover { border-color:var(--accent); }
+  .pb-top { display:flex; justify-content:space-between; align-items:flex-start; gap:12px; margin-bottom:4px; }
+  .pb-name { font-family:var(--serif); font-size:19px; }
+  .pb-scope { font-size:12px; color:var(--text-faint); margin-bottom:14px; }
+  .pb-stats { display:flex; gap:20px; margin-bottom:16px; }
+  .pb-stat .n { font-family:var(--serif); font-size:20px; line-height:1; }
+  .pb-stat .l { font-size:10.5px; color:var(--text-faint); text-transform:uppercase; letter-spacing:0.04em; margin-top:4px; }
+  .pb-ground { font-size:11.5px; color:var(--text-muted); padding-top:14px; border-top:1px solid var(--border); display:flex; justify-content:space-between; align-items:center; }
+  .pb-ground .src { color:var(--accent); }
+  .pb-foot { display:flex; justify-content:space-between; align-items:center; margin-top:12px; }
+  .pb-edit { font-size:12px; color:var(--accent); }
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <aside class="sidebar">
+    <div class="sidebar-brand">NeuralChain<span style="color:var(--accent)">.</span></div>
+    <div class="sidebar-section">Workspace</div>
+    <a class="nav-item" href="dashboard.html"><span class="ico">⌂</span> Home</a>
+    <a class="nav-item" href="assistant.html"><span class="ico">✦</span> Assistant</a>
+    <a class="nav-item" href="workflows.html"><span class="ico">⟳</span> Agents</a>
+    <div class="sidebar-section">Modules</div>
+    <a class="nav-item" href="research.html"><span class="ico">◊</span> Research</a>
+    <a class="nav-item" href="diligence.html"><span class="ico">⊞</span> Diligence</a>
+    <a class="nav-item" href="review.html"><span class="ico">▤</span> Review</a>
+    <a class="nav-item active" href="playbooks.html"><span class="ico">❏</span> Playbooks</a>
+    <a class="nav-item" href="draft.html"><span class="ico">✎</span> Draft</a>
+    <div class="sidebar-section">Admin</div>
+    <a class="nav-item" href="#"><span class="ico">⚿</span> Security</a>
+    <a class="nav-item" href="settings.html"><span class="ico">⚙</span> Settings</a>
+    <div class="sidebar-footer">
+      <div style="color:var(--text-muted);">Acme Legal · prod</div>
+      <div>Deployed in your VPC</div>
+    </div>
+  </aside>
+
+  <main class="main">
+
+    <div class="page-head">
+      <div>
+        <div style="font-size: 11px; letter-spacing: 0.12em; color: var(--accent); text-transform: uppercase; margin-bottom: 8px;">Firm standards · learned from your corpus</div>
+        <h1 class="page-title">Playbooks</h1>
+        <p class="page-sub">Your firm's negotiation standards, written in plain English. Each playbook is a set of rules — preferred language, fallback positions, and escalation thresholds — that Review, Assistant, and Agents all check contracts against.</p>
+      </div>
+      <div class="page-actions">
+        <button class="btn">Import from documents</button>
+        <button class="btn btn-primary">+ Create playbook</button>
+      </div>
+    </div>
+
+    <!-- Create paths -->
+    <div class="create-row">
+      <a class="create feat" href="#">
+        <div class="tagline">✦ Recommended</div>
+        <div class="create-name">Generate from your corpus</div>
+        <div class="create-desc">Point at a contract type and NeuralChain reads your executed precedents in-VPC, then proposes preferred and fallback language drawn from what your firm has actually signed.</div>
+        <div class="create-cta">Choose a contract type →</div>
+      </a>
+      <a class="create alt" href="#">
+        <div class="create-ic">▦</div>
+        <div class="create-name">Start from a template</div>
+        <div class="create-desc">Begin with a pre-built playbook for NDAs, DPAs, MSAs, or employment — then tune the rules to your standards.</div>
+        <div class="create-cta">Browse 9 templates →</div>
+      </a>
+      <a class="create alt" href="#">
+        <div class="create-ic">✎</div>
+        <div class="create-name">Build from scratch</div>
+        <div class="create-desc">Add rules one at a time. Define the clause, your position, and what counts as a deviation.</div>
+        <div class="create-cta">New blank playbook →</div>
+      </a>
+    </div>
+
+    <!-- Existing playbooks -->
+    <div class="sec-label">
+      <span>Your playbooks · 5</span>
+      <span style="color:var(--text-faint); text-transform:none; letter-spacing:0;">Sorted by last edited</span>
+    </div>
+
+    <div class="pb-grid">
+
+      <a class="pb-card" href="playbook-edit.html">
+        <div class="pb-top">
+          <div class="pb-name">Acme MSA Playbook</div>
+          <span class="chip chip-active"><span class="chip-dot"></span>Active · v4</span>
+        </div>
+        <div class="pb-scope">Third-party / vendor paper · master service agreements</div>
+        <div class="pb-stats">
+          <div class="pb-stat"><div class="n">38</div><div class="l">Rules</div></div>
+          <div class="pb-stat"><div class="n">2</div><div class="l">High-sev</div></div>
+          <div class="pb-stat"><div class="n">31</div><div class="l">Auto-redline</div></div>
+        </div>
+        <div class="pb-ground">
+          <span>Grounded in <span class="src">1,240 executed agreements</span></span>
+          <span class="pb-edit">Edit →</span>
+        </div>
+      </a>
+
+      <a class="pb-card" href="playbook-edit.html">
+        <div class="pb-top">
+          <div class="pb-name">Mutual NDA Playbook</div>
+          <span class="chip chip-active"><span class="chip-dot"></span>Active · v2</span>
+        </div>
+        <div class="pb-scope">First-party & third-party · mutual non-disclosure</div>
+        <div class="pb-stats">
+          <div class="pb-stat"><div class="n">14</div><div class="l">Rules</div></div>
+          <div class="pb-stat"><div class="n">1</div><div class="l">High-sev</div></div>
+          <div class="pb-stat"><div class="n">12</div><div class="l">Auto-redline</div></div>
+        </div>
+        <div class="pb-ground">
+          <span>Grounded in <span class="src">312 executed NDAs</span></span>
+          <span class="pb-edit">Edit →</span>
+        </div>
+      </a>
+
+      <a class="pb-card" href="playbook-edit.html">
+        <div class="pb-top">
+          <div class="pb-name">DPA Playbook</div>
+          <span class="chip chip-active"><span class="chip-dot"></span>Active · v1</span>
+        </div>
+        <div class="pb-scope">Third-party paper · data processing addenda · GDPR</div>
+        <div class="pb-stats">
+          <div class="pb-stat"><div class="n">22</div><div class="l">Rules</div></div>
+          <div class="pb-stat"><div class="n">3</div><div class="l">High-sev</div></div>
+          <div class="pb-stat"><div class="n">18</div><div class="l">Auto-redline</div></div>
+        </div>
+        <div class="pb-ground">
+          <span>Grounded in <span class="src">196 executed DPAs</span></span>
+          <span class="pb-edit">Edit →</span>
+        </div>
+      </a>
+
+      <a class="pb-card" href="playbook-edit.html">
+        <div class="pb-top">
+          <div class="pb-name">SaaS Subscription Playbook</div>
+          <span class="chip chip-active"><span class="chip-dot"></span>Active · v3</span>
+        </div>
+        <div class="pb-scope">First-party paper · order forms & subscription terms</div>
+        <div class="pb-stats">
+          <div class="pb-stat"><div class="n">27</div><div class="l">Rules</div></div>
+          <div class="pb-stat"><div class="n">2</div><div class="l">High-sev</div></div>
+          <div class="pb-stat"><div class="n">24</div><div class="l">Auto-redline</div></div>
+        </div>
+        <div class="pb-ground">
+          <span>Grounded in <span class="src">540 executed order forms</span></span>
+          <span class="pb-edit">Edit →</span>
+        </div>
+      </a>
+
+      <a class="pb-card" href="playbook-edit.html">
+        <div class="pb-top">
+          <div class="pb-name">Employment Agreement Playbook</div>
+          <span class="chip chip-tmpl"><span class="chip-dot"></span>Draft</span>
+        </div>
+        <div class="pb-scope">First-party paper · offer letters & employment terms</div>
+        <div class="pb-stats">
+          <div class="pb-stat"><div class="n">9</div><div class="l">Rules</div></div>
+          <div class="pb-stat"><div class="n">1</div><div class="l">High-sev</div></div>
+          <div class="pb-stat"><div class="n">—</div><div class="l">Not live</div></div>
+        </div>
+        <div class="pb-ground">
+          <span style="color:var(--text-faint);">Generated 2d ago · needs review before publish</span>
+          <span class="pb-edit">Edit →</span>
+        </div>
+      </a>
+
+      <a class="pb-card" href="#" style="border-style:dashed; align-items:center; justify-content:center; color:var(--text-muted); min-height:180px;">
+        <div style="text-align:center;">
+          <div style="font-size:20px; margin-bottom:6px;">+</div>
+          <div style="font-size:13px;">New playbook</div>
+        </div>
+      </a>
+
+    </div>
+
+    <div style="margin-top: 28px; padding: 16px 20px; background: var(--bg-elev); border: 1px solid var(--border); border-radius: 6px; display: flex; gap: 24px; font-size: 12px; color: var(--text-muted);">
+      <span><strong style="color: var(--text)">Plain English</strong> — no prompt engineering, no code</span>
+      <span>·</span>
+      <span><strong style="color: var(--text)">Layerable</strong> — combine custom + template playbooks at review time</span>
+      <span>·</span>
+      <span><strong style="color: var(--text)">In-VPC</strong> — corpus never leaves your boundary</span>
+    </div>
+
+  </main>
+
+</div>
+
+</body>
+</html>
