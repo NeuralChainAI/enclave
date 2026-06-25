@@ -24,6 +24,7 @@ test("adminSearch posts query+filters with the admin bearer and returns document
 });
 
 test("adminSearch throws a clear error when the admin key is missing", async () => {
+  delete (process.env as Record<string, string>).ONYX_ADMIN_API_KEY; // explicit, not order-dependent
   const { adminSearch } = await import("./client");
   await expect(adminSearch("x")).rejects.toThrow(/ONYX_ADMIN_API_KEY/);
 });

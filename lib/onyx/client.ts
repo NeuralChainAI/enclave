@@ -54,6 +54,8 @@ export async function adminSearch(
     throw new Error(`admin/search failed: ${res.status} ${await res.text().catch(() => "")}`);
   }
   const data = (await res.json()) as { documents: OnyxSource[] };
+  // AdminSearchRequest has no result-count param, so Onyx returns its own page
+  // size; `k` is a client-side cap on how many passages we forward to the model.
   return (data.documents ?? []).slice(0, k);
 }
 
