@@ -30,6 +30,9 @@ export default function ResearchPage() {
     const handoff = sessionStorage.getItem("enclave:ask");
     if (handoff) {
       sessionStorage.removeItem("enclave:ask");
+      // Intentional one-time hydration from sessionStorage on mount; can't use a
+      // lazy useState initializer because sessionStorage is unavailable during SSR.
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setQuestion(handoff);
       ask(handoff);
     }
