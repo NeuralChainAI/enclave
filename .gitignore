@@ -43,3 +43,7 @@ next-env.d.ts
 
 # local agent/editor settings
 .claude/
+
+# Python
+__pycache__/
+*.pyc
