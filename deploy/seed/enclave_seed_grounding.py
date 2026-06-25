@@ -44,6 +44,11 @@ SqlEngine.init_engine(pool_size=2, max_overflow=2)
 CURRENT_TENANT_ID_CONTEXTVAR.set(POSTGRES_DEFAULT_SCHEMA)
 
 with get_session_with_current_tenant() as db:
+    # Several Onyx helpers below may commit internally; the explicit db.commit()
+    # after each is intentional belt-and-suspenders — it keeps each step durable
+    # regardless of the pinned image's internal commit behavior, so a partial
+    # failure always leaves a coherent state that a clean re-run recovers from.
+
     # 1. Connector (id>0) — reuse by name if present.
     row = db.execute(
         text("select id from connector where name=:n order by id limit 1"),
@@ -97,6 +102,12 @@ with get_session_with_current_tenant() as db:
         {"m": ANSWER_MODEL},
     ).first()
     model_cfg_id = model_cfg[0] if model_cfg else None
+    if model_cfg_id is None:
+        print(
+            f"WARNING: model '{ANSWER_MODEL}' not found in model_configuration — the "
+            "persona will fall back to the provider default (run enclave_seed_ollama.py "
+            "and pull the model first)."
+        )
     existing = next((p for p in get_personas(db_session=db) if p.name == PERSONA_NAME), None)
     upsert_persona(
         user=None,
@@ -114,7 +125,11 @@ with get_session_with_current_tenant() as db:
     )
     db.commit()
 
-    # 4. Mint a fresh ADMIN key (the old token is unrecoverable).
+    # 4. Mint a fresh ADMIN key. The old token is unrecoverable, so each run rotates
+    # the key and the orchestrator (seed.sh) captures the new one. Prior enclave-seed
+    # key + service-user rows remain as harmless local-dev cruft — wipe the db_volume
+    # to reset. We deliberately avoid a cross-table cascade delete of old key users
+    # here (FK-fragile against the black-box image, for negligible benefit locally).
     desc = insert_api_key(db, APIKeyArgs(name="enclave-seed", role=UserRole.ADMIN), user_id=None)
     db.commit()
 
