@@ -27,17 +27,18 @@ export async function POST(req: NextRequest) {
     return Response.json({ error: (e as Error).message }, { status: 500 });
   }
 
-  // Step 2: numbered passages.
+  // Step 2: numbered passages. citationMap is unused here — the client resolves
+  // [n] -> source by index (passage order == citation order).
   const { context } = buildPassageContext(docs);
 
   // Step 3 + 4: grounded send to the tool-less persona, abort-wired + timed out.
   const ac = new AbortController();
   const timeout = setTimeout(() => ac.abort(), ANSWER_TIMEOUT_MS);
-  req.signal.addEventListener("abort", () => ac.abort());
+  req.signal.addEventListener("abort", () => ac.abort(), { once: true });
 
   let upstream: Response;
   try {
-    const chatSessionId = await createChatSession(RESEARCH_PERSONA_ID);
+    const chatSessionId = await createChatSession(RESEARCH_PERSONA_ID, ac.signal);
     upstream = await sendChatMessageStream({
       message: question,
       chatSessionId,
@@ -70,11 +71,29 @@ export async function POST(req: NextRequest) {
           controller.enqueue(value);
         }
       } catch (e) {
-        controller.enqueue(new TextEncoder().encode(JSON.stringify({ error: String(e) }) + "\n"));
+        // AbortError == our timeout fired or the client disconnected.
+        const msg =
+          (e as Error)?.name === "AbortError"
+            ? "research request timed out or was cancelled"
+            : String(e);
+        try {
+          controller.enqueue(new TextEncoder().encode(JSON.stringify({ error: msg }) + "\n"));
+        } catch {
+          // controller already closed (downstream cancelled) — nothing to surface.
+        }
       } finally {
         clearTimeout(timeout);
-        controller.close();
+        try {
+          controller.close();
+        } catch {
+          // already closed/cancelled.
+        }
       }
+    },
+    cancel() {
+      // Downstream (client) went away — abort the upstream Onyx fetch so we don't
+      // hold its connection open until Onyx finishes generating.
+      ac.abort();
     },
   });
 

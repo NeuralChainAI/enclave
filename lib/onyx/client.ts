@@ -24,11 +24,15 @@ function adminAuthHeaders(): Record<string, string> {
   return { Authorization: `Bearer ${key}` };
 }
 
-export async function createChatSession(personaId = 0): Promise<string> {
+export async function createChatSession(
+  personaId = 0,
+  signal?: AbortSignal
+): Promise<string> {
   const res = await fetch(`${ONYX_API_URL}/chat/create-chat-session`, {
     method: "POST",
     headers: { "Content-Type": "application/json", ...authHeaders() },
     body: JSON.stringify({ persona_id: personaId }),
+    signal,
   });
   if (!res.ok) {
     throw new Error(
