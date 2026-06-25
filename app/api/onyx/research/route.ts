@@ -42,8 +42,15 @@ export async function POST(req: NextRequest) {
     upstream = await sendChatMessageStream({
       message: question,
       chatSessionId,
-      includeCitations: true,
-      additionalContext: docs.length ? `SOURCE PASSAGES:\n\n${context}` : undefined,
+      // false on purpose: our passages are supplied via additional_context, not via
+      // Onyx's search tool, so Onyx has no search-doc to map [n] onto and would STRIP
+      // the markers. We keep the raw [n] and resolve them client-side by index.
+      includeCitations: false,
+      additionalContext: docs.length
+        ? `SOURCE PASSAGES. Cite every fact with its bracketed passage number ` +
+          `(e.g. [1] or [2][3]); refer to passages only by number, never by document ` +
+          `name:\n\n${context}`
+        : undefined,
       signal: ac.signal,
     });
   } catch (e) {
