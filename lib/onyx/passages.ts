@@ -9,14 +9,14 @@ export type PassageContext = {
 // Build the numbered passage block injected as `additional_context`, plus the
 // citation-number -> document_id map. Passage N is cited as [N] in the answer.
 export function buildPassageContext(docs: OnyxSource[]): PassageContext {
-  const citationMap: Record<number, string> = {};
   const lines = docs.map((doc, i) => {
-    const n = i + 1;
-    citationMap[n] = doc.document_id;
     const label = doc.semantic_identifier || doc.document_id;
     const text = (doc.blurb || "").replace(/\s+/g, " ").trim();
-    return `[${n}] ${label}: ${text}`;
+    return `[${i + 1}] ${label}: ${text}`;
   });
+  const citationMap: Record<number, string> = Object.fromEntries(
+    docs.map((doc, i) => [i + 1, doc.document_id])
+  );
   return { context: lines.join("\n\n"), citationMap };
 }
 

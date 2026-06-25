@@ -54,3 +54,11 @@ test("buildSourcesPrelude emits a single Onyx message_start envelope line", () =
   expect(parsed.obj.type).toBe("message_start");
   expect(parsed.obj.final_documents[0].document_id).toBe("a");
 });
+
+test("buildSourcesPrelude round-trips blurbs containing quotes and newlines", () => {
+  const docs = [src({ document_id: "a", blurb: 'He said "hello"\nworld\tand more' })];
+  const line = buildSourcesPrelude(docs);
+  expect(line.endsWith("\n")).toBe(true);
+  const parsed = JSON.parse(line.trim());
+  expect(parsed.obj.final_documents[0].blurb).toBe('He said "hello"\nworld\tand more');
+});
