@@ -5,6 +5,7 @@
 set -euo pipefail
 cd "$(dirname "$0")/../.."
 CONTAINER="${ONYX_API_CONTAINER:-onyx-api_server-1}"
+CACHE="${ONYX_CACHE_CONTAINER:-onyx-cache-1}"
 
 echo "→ seeding connector / cc_pair / persona / key (inside $CONTAINER)..."
 docker cp deploy/seed/enclave_seed_grounding.py "$CONTAINER":/tmp/seed.py
@@ -24,5 +25,12 @@ echo "ONYX_ADMIN_API_KEY=$KEY" >> .env.local
 
 echo "→ ingesting corpus into cc_pair $CC..."
 ONYX_ADMIN_KEY="$KEY" ONYX_CC_PAIR_ID="$CC" python3 deploy/seed/ingest_corpus.py
+
+# Enable anonymous API access so the chat endpoints (create-chat-session /
+# send-chat-message) work under AUTH_TYPE=disabled. This flag lives in Redis,
+# which runs without persistence (tmpfs), so it is lost on every cache restart —
+# re-running seed.sh restores it. 30-day TTL.
+echo "→ enabling anonymous Onyx access (in $CACHE)..."
+docker exec "$CACHE" redis-cli set public:anonymous_user_enabled 1 EX 2592000 >/dev/null
 
 echo "✓ grounding seeded. Restart 'bun dev' so it picks up .env.local."
