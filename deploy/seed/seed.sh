@@ -9,7 +9,8 @@ CONTAINER="${ONYX_API_CONTAINER:-onyx-api_server-1}"
 echo "→ seeding connector / cc_pair / persona / key (inside $CONTAINER)…"
 docker cp deploy/seed/enclave_seed_grounding.py "$CONTAINER":/tmp/seed.py
 OUT="$(docker exec "$CONTAINER" python /tmp/seed.py)"
-echo "$OUT"
+# Echo everything except the minted key line — keep the token out of terminal/CI logs.
+echo "$OUT" | grep -v '^ENCLAVE_ADMIN_KEY=' || true
 KEY="$(echo "$OUT" | grep '^ENCLAVE_ADMIN_KEY=' | cut -d= -f2-)"
 CC="$(echo "$OUT" | grep '^ENCLAVE_CC_PAIR_ID=' | cut -d= -f2-)"
 test -n "$KEY" && test -n "$CC" || { echo "seed did not emit key/cc_pair"; exit 1; }
