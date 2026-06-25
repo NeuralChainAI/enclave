@@ -83,8 +83,7 @@ export default function ResearchPage() {
     }
   }
 
-  const citedNums = extractCitedNumbers(answer);
-  const citedSet = new Set(citedNums);
+  const citedSet = new Set(extractCitedNumbers(answer));
   // sources are returned in retrieval order; source[n-1] is citation [n].
   const citedList = sources
     .map((doc, i) => ({ num: i + 1, doc }))
@@ -215,10 +214,11 @@ export default function ResearchPage() {
             ) : (
               sources.map((doc, i) => {
                 const num = i + 1;
+                const isCited = citedSet.has(num);
                 return (
                   <div
                     key={doc.document_id}
-                    className={`source-item${activeNum === num ? " active" : ""}${citedSet.has(num) ? "" : " uncited"}`}
+                    className={`source-item${activeNum === num ? " active" : ""}${isCited ? "" : " uncited"}`}
                     onClick={() => setActiveNum(num)}
                   >
                     <div className="source-head">
@@ -227,7 +227,7 @@ export default function ResearchPage() {
                     </div>
                     <div className="source-meta">
                       {doc.source_type}
-                      {citedSet.has(num) ? " · cited" : ""}
+                      {isCited ? " · cited" : ""}
                     </div>
                     {doc.blurb && <div className="source-excerpt">{doc.blurb}</div>}
                   </div>
