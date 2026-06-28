@@ -43,3 +43,10 @@ next-env.d.ts
 
 # local agent/editor settings
 .claude/
+
+# Python
+__pycache__/
+*.pyc
+
+# Superpowers-generated planning docs (not for PRs)
+docs/superpowers/

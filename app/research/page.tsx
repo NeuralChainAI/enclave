@@ -1,17 +1,30 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { parseOnyxStream } from "@/lib/onyx/stream";
 import { renderWithCitations } from "@/lib/onyx/citations";
+import { extractCitedNumbers } from "@/lib/onyx/passages";
+import {
+  matchStrength,
+  overallConfidence,
+  type MatchStrength,
+} from "@/lib/onyx/confidence";
 import type { OnyxSource } from "@/lib/onyx/types";
 
 type Status = "idle" | "streaming" | "done" | "error";
 
+// Match strength -> severity chip (green / amber / red).
+const STRENGTH_CHIP: Record<MatchStrength, string> = {
+  strong: "chip-low",
+  moderate: "chip-med",
+  weak: "chip-high",
+};
+
 const SUGGESTIONS = [
-  "Which counterparties are above our preferred indemnity cap?",
-  "Summarize the change-of-control provisions across our active MSAs",
-  "Compare governing-law clauses between our US and EU contracts",
-  "Where do we deviate from our standard limitation-of-liability language?",
+  "What does the Vivint non-compete restrict, and which parties does it bind?",
+  "Summarize the renewal and termination terms in the Netzee maintenance agreement",
+  "What are the key obligations in the Salesforce reseller agreement?",
+  "Compare the two Soupman franchise agreements",
 ];
 
 export default function ResearchPage() {
@@ -19,33 +32,24 @@ export default function ResearchPage() {
   const [submitted, setSubmitted] = useState("");
   const [answer, setAnswer] = useState("");
   const [sources, setSources] = useState<OnyxSource[]>([]);
-  const [cited, setCited] = useState<Map<number, string>>(new Map());
   const [status, setStatus] = useState<Status>("idle");
   const [errMsg, setErrMsg] = useState("");
   const [tookMs, setTookMs] = useState<number | null>(null);
   const [activeNum, setActiveNum] = useState<number | null>(null);
-
-  const sessionRef = useRef<string | null>(null);
 
   // Pick up a question handed off from the Dashboard ask-hero.
   useEffect(() => {
     const handoff = sessionStorage.getItem("enclave:ask");
     if (handoff) {
       sessionStorage.removeItem("enclave:ask");
+      // Intentional one-time hydration from sessionStorage on mount; can't use a
+      // lazy useState initializer because sessionStorage is unavailable during SSR.
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setQuestion(handoff);
       ask(handoff);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  async function ensureSession(): Promise<string> {
-    if (sessionRef.current) return sessionRef.current;
-    const res = await fetch("/api/onyx/session", { method: "POST" });
-    if (!res.ok) throw new Error((await res.json()).error ?? "session failed");
-    const { chatSessionId } = await res.json();
-    sessionRef.current = chatSessionId;
-    return chatSessionId;
-  }
 
   async function ask(q: string) {
     const query = q.trim();
@@ -54,7 +58,6 @@ export default function ResearchPage() {
     setSubmitted(query);
     setAnswer("");
     setSources([]);
-    setCited(new Map());
     setErrMsg("");
     setTookMs(null);
     setActiveNum(null);
@@ -62,11 +65,10 @@ export default function ResearchPage() {
 
     const started = performance.now();
     try {
-      const chatSessionId = await ensureSession();
-      const res = await fetch("/api/onyx/chat", {
+      const res = await fetch("/api/onyx/research", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: query, chatSessionId }),
+        body: JSON.stringify({ question: query }),
       });
       if (!res.ok) throw new Error((await res.json()).error ?? `HTTP ${res.status}`);
 
@@ -81,13 +83,6 @@ export default function ResearchPage() {
           case "message_delta":
             setAnswer((prev) => prev + (packet.content ?? ""));
             break;
-          case "citation_info":
-            setCited((prev) => {
-              const next = new Map(prev);
-              next.set(packet.citation_number, packet.document_id);
-              return next;
-            });
-            break;
           case "error":
             throw new Error("the model stream returned an error");
         }
@@ -100,12 +95,13 @@ export default function ResearchPage() {
     }
   }
 
-  const byDocId = new Map(sources.map((s) => [s.document_id, s]));
-  const citedList = [...cited.entries()]
-    .sort((a, b) => a[0] - b[0])
-    .map(([num, docId]) => ({ num, doc: byDocId.get(docId) }))
-    .filter((x): x is { num: number; doc: OnyxSource } => Boolean(x.doc));
+  const citedSet = new Set(extractCitedNumbers(answer));
+  // sources are returned in retrieval order; source[n-1] is citation [n].
+  const citedList = sources
+    .map((doc, i) => ({ num: i + 1, doc }))
+    .filter(({ num }) => citedSet.has(num));
 
+  const confidence = overallConfidence(sources);
   const showLayout = status !== "idle";
 
   return (
@@ -133,7 +129,7 @@ export default function ResearchPage() {
         <span style={{ color: "var(--text-faint)", fontSize: 16 }}>⌕</span>
         <input
           value={question}
-          placeholder="What's the median indemnity cap across our SaaS MSAs signed in the last 24 months?"
+          placeholder="What does the Vivint non-compete restrict, and which parties does it bind?"
           onChange={(e) => setQuestion(e.target.value)}
           onKeyDown={(e) => {
             if (e.key === "Enter") ask(question);
@@ -166,6 +162,24 @@ export default function ResearchPage() {
                     ? "Error"
                     : `${sources.length} sources retrieved · ${citedList.length} cited`}
               </div>
+
+              {status !== "error" && sources.length > 0 && (
+                <div className={`conf-banner conf-${confidence.level}`}>
+                  <span>
+                    {confidence.level === "high"
+                      ? "✓ Strong corpus match — answer grounded in a closely-matching document."
+                      : "⚠ Weak corpus match — no strongly relevant document found; treat this answer with caution."}
+                  </span>
+                  {confidence.topScore != null && (
+                    <span className="conf-score">top relevance {confidence.topScore.toFixed(2)}</span>
+                  )}
+                </div>
+              )}
+              {status === "done" && sources.length === 0 && (
+                <div className="conf-banner conf-none">
+                  No relevant documents found in your corpus for this question.
+                </div>
+              )}
 
               {status === "error" ? (
                 <div className="answer" style={{ color: "var(--sev-high)" }}>
@@ -222,30 +236,39 @@ export default function ResearchPage() {
                 {citedList.length} cited · {sources.length} retrieved
               </span>
             </div>
-            {citedList.length === 0 ? (
+            {sources.length === 0 ? (
               <div className="sources-empty">
                 {status === "streaming"
-                  ? "Sources will appear as they're cited…"
-                  : "No sources cited in this answer."}
+                  ? "Retrieving from your corpus…"
+                  : "No sources retrieved for this question."}
               </div>
             ) : (
-              citedList.map(({ num, doc }) => (
-                <div
-                  key={num}
-                  className={`source-item${activeNum === num ? " active" : ""}`}
-                  onClick={() => setActiveNum(num)}
-                >
-                  <div className="source-head">
-                    <span className="source-cite-num">{num}</span>
-                    <span className="source-doc">{doc.semantic_identifier}</span>
+              sources.map((doc, i) => {
+                const num = i + 1;
+                const isCited = citedSet.has(num);
+                return (
+                  <div
+                    key={doc.document_id}
+                    className={`source-item${activeNum === num ? " active" : ""}${isCited ? "" : " uncited"}`}
+                    onClick={() => setActiveNum(num)}
+                  >
+                    <div className="source-head">
+                      <span className="source-cite-num">{num}</span>
+                      <span className="source-doc">{doc.semantic_identifier}</span>
+                    </div>
+                    <div className="source-meta">
+                      <span>
+                        {doc.source_type}
+                        {isCited ? " · cited" : ""}
+                      </span>
+                      <span className={`chip ${STRENGTH_CHIP[matchStrength(doc.score)]}`}>
+                        {matchStrength(doc.score)} · {(doc.score ?? 0).toFixed(2)}
+                      </span>
+                    </div>
+                    {doc.blurb && <div className="source-excerpt">{doc.blurb}</div>}
                   </div>
-                  <div className="source-meta">
-                    {doc.source_type}
-                    {doc.link ? " · linked" : ""}
-                  </div>
-                  {doc.blurb && <div className="source-excerpt">{doc.blurb}</div>}
-                </div>
-              ))
+                );
+              })
             )}
           </div>
         </div>

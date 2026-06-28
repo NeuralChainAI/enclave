@@ -5,9 +5,9 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 const ASK_CHIPS = [
-  "Summarize the Apollo MSA renewal risk",
-  "Which active deals breach our LoL policy?",
-  "Draft an NDA in our house style",
+  "Summarize the Vivint non-competition agreement",
+  "What are the renewal terms in the Netzee maintenance agreement?",
+  "What does the Salesforce reseller agreement cover?",
 ];
 
 const CAPS = [
