@@ -4,15 +4,27 @@ import { useEffect, useState } from "react";
 import { parseOnyxStream } from "@/lib/onyx/stream";
 import { renderWithCitations } from "@/lib/onyx/citations";
 import { extractCitedNumbers } from "@/lib/onyx/passages";
+import {
+  matchStrength,
+  overallConfidence,
+  type MatchStrength,
+} from "@/lib/onyx/confidence";
 import type { OnyxSource } from "@/lib/onyx/types";
 
 type Status = "idle" | "streaming" | "done" | "error";
 
+// Match strength -> severity chip (green / amber / red).
+const STRENGTH_CHIP: Record<MatchStrength, string> = {
+  strong: "chip-low",
+  moderate: "chip-med",
+  weak: "chip-high",
+};
+
 const SUGGESTIONS = [
-  "Which counterparties are above our preferred indemnity cap?",
-  "Summarize the change-of-control provisions across our active MSAs",
-  "Compare governing-law clauses between our US and EU contracts",
-  "Where do we deviate from our standard limitation-of-liability language?",
+  "What does the Vivint non-compete restrict, and which parties does it bind?",
+  "Summarize the renewal and termination terms in the Netzee maintenance agreement",
+  "What are the key obligations in the Salesforce reseller agreement?",
+  "Compare the two Soupman franchise agreements",
 ];
 
 export default function ResearchPage() {
@@ -89,6 +101,7 @@ export default function ResearchPage() {
     .map((doc, i) => ({ num: i + 1, doc }))
     .filter(({ num }) => citedSet.has(num));
 
+  const confidence = overallConfidence(sources);
   const showLayout = status !== "idle";
 
   return (
@@ -116,7 +129,7 @@ export default function ResearchPage() {
         <span style={{ color: "var(--text-faint)", fontSize: 16 }}>⌕</span>
         <input
           value={question}
-          placeholder="What's the median indemnity cap across our SaaS MSAs signed in the last 24 months?"
+          placeholder="What does the Vivint non-compete restrict, and which parties does it bind?"
           onChange={(e) => setQuestion(e.target.value)}
           onKeyDown={(e) => {
             if (e.key === "Enter") ask(question);
@@ -149,6 +162,24 @@ export default function ResearchPage() {
                     ? "Error"
                     : `${sources.length} sources retrieved · ${citedList.length} cited`}
               </div>
+
+              {status !== "error" && sources.length > 0 && (
+                <div className={`conf-banner conf-${confidence.level}`}>
+                  <span>
+                    {confidence.level === "high"
+                      ? "✓ Strong corpus match — answer grounded in a closely-matching document."
+                      : "⚠ Weak corpus match — no strongly relevant document found; treat this answer with caution."}
+                  </span>
+                  {confidence.topScore != null && (
+                    <span className="conf-score">top relevance {confidence.topScore.toFixed(2)}</span>
+                  )}
+                </div>
+              )}
+              {status === "done" && sources.length === 0 && (
+                <div className="conf-banner conf-none">
+                  No relevant documents found in your corpus for this question.
+                </div>
+              )}
 
               {status === "error" ? (
                 <div className="answer" style={{ color: "var(--sev-high)" }}>
@@ -226,8 +257,13 @@ export default function ResearchPage() {
                       <span className="source-doc">{doc.semantic_identifier}</span>
                     </div>
                     <div className="source-meta">
-                      {doc.source_type}
-                      {isCited ? " · cited" : ""}
+                      <span>
+                        {doc.source_type}
+                        {isCited ? " · cited" : ""}
+                      </span>
+                      <span className={`chip ${STRENGTH_CHIP[matchStrength(doc.score)]}`}>
+                        {matchStrength(doc.score)} · {(doc.score ?? 0).toFixed(2)}
+                      </span>
                     </div>
                     {doc.blurb && <div className="source-excerpt">{doc.blurb}</div>}
                   </div>
