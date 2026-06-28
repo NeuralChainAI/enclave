@@ -47,3 +47,6 @@ next-env.d.ts
 # Python
 __pycache__/
 *.pyc
+
+# Superpowers-generated planning docs (not for PRs)
+docs/superpowers/
