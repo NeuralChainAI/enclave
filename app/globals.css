@@ -220,7 +220,7 @@ button {
 .source-meta .chip { text-transform: capitalize; flex-shrink: 0; }
 
 /* Retrieval confidence banner (Research) */
-.conf-banner { display: flex; align-items: center; gap: 10px; font-size: 12px; padding: 8px 12px; border-radius: 6px; margin-bottom: 16px; border: 1px solid var(--border); }
+.conf-banner { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 10px; font-size: 12px; line-height: 1.5; padding: 8px 12px; border-radius: 6px; margin-bottom: 16px; border: 1px solid var(--border); }
 .conf-high { background: rgba(34,116,77,0.10); border-color: rgba(34,116,77,0.35); color: #82d5a3; }
 .conf-low  { background: rgba(197,122,32,0.12); border-color: rgba(197,122,32,0.45); color: #f4c47a; }
 .conf-none { background: var(--bg-panel); color: var(--text-muted); }
